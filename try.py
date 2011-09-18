@@ -3,6 +3,10 @@ import time
 
 h = hid.device(0x461, 0x20)
 
+print h.get_manufacturer_string()
+print h.get_product_string()
+print h.get_serial_number_string()
+
 h.set_nonblocking(1)
 
 for k in range(10):
