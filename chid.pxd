@@ -4,6 +4,22 @@ cdef extern from "hidapi.h":
   ctypedef struct hid_device:
     pass
 
+  cdef struct hid_device_info:
+    char *path
+    unsigned short vendor_id
+    unsigned short product_id
+    wchar_t *serial_number
+    unsigned short release_number
+    wchar_t *manufacturer_string
+    wchar_t *product_string
+    unsigned short usage_page
+    unsigned short usage
+    int interface_number
+    hid_device_info *next
+
+  hid_device_info* hid_enumerate(unsigned short, unsigned short)
+  void hid_free_enumeration(hid_device_info*)
+  
   hid_device* hid_open(unsigned short, unsigned short, void*)
   int hid_write(hid_device* device, unsigned char *data, int length)
   int hid_read(hid_device* device, unsigned char* data, int max_length)

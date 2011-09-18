@@ -9,8 +9,30 @@ cdef extern from "stdlib.h":
   void* malloc(size_t size)
 
 cdef object U(wchar_t *wcs):
+  if wcs == NULL:
+    return ''
   cdef int n = wcslen(wcs)
   return PyUnicode_FromUnicode(<Py_UNICODE*>wcs, n)
+
+def enumerate(vendor_id, product_id):
+  cdef hid_device_info* info = hid_enumerate(vendor_id, product_id)
+  cdef hid_device_info* c = info
+  res = []
+  while c:
+    res.append({
+      'path': c.path,
+      'vendor_id': c.vendor_id,
+      'product_id': c.product_id,
+      'serial_number': U(c.serial_number),
+      'release_number': c.release_number,
+      'manufacturer_string': U(c.manufacturer_string),
+      'product_string': U(c.product_string),
+      'usage_page': c.usage_page,
+      'usage': c.usage
+    })
+    c = c.next
+  hid_free_enumeration(info)
+  return res
 
 cdef class device:
   cdef hid_device *_c_hid

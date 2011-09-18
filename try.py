@@ -1,6 +1,8 @@
 import hid
 import time
 
+print hid.enumerate(0, 0)
+
 h = hid.device(0x461, 0x20)
 
 print h.get_manufacturer_string()
