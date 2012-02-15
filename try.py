@@ -1,24 +1,43 @@
 import hid
 import time
 
-print hid.enumerate(0, 0)
+for d in hid.enumerate(0, 0):
+    keys = d.keys()
+    keys.sort()
+    for key in keys:
+        print "%s : %s" % (key, d[key])
+    print ""
 
-h = hid.device(0x461, 0x20)
+print "Opening device"
+#h = hid.device(0x461, 0x20)
+h = hid.device(0x1941, 0x8021)
 
-print h.get_manufacturer_string()
-print h.get_product_string()
-print h.get_serial_number_string()
+if h:
 
-h.set_nonblocking(1)
+    print "Manufacturer: %s" % h.get_manufacturer_string()
+    print "Product: %s" % h.get_product_string()
+    print "Serial No: %s" % h.get_serial_number_string()
 
-for k in range(10):
-    for i in [0, 1]:
-        for j in [0, 1]:
-            h.write([0x80, i, j])
-            d = h.read(5)
-            if d:
-                print d
-            time.sleep(0.05)
+    h.set_nonblocking(1)
+
+    #for k in range(10):
+    #    for i in [0, 1]:
+    #        for j in [0, 1]:
+    #            h.write([0x80, i, j])
+    #            d = h.read(5)
+    #            if d:
+    #                print d
+    #            time.sleep(0.05)
+
+    print "Closing device"
+    h.close()
+
+else:
+    print "Hard coded test hid could not be opened, update this script with one"
+    print "from the enumeration list output and try again."
+
+print "Done"
+
 
 
 

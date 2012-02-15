@@ -41,6 +41,9 @@ cdef class device:
       if self._c_hid == NULL:
           raise IOError('open failed')
 
+  def close(self):
+      hid_close(self._c_hid)
+
   def write(self, buff):
       '''Accept a list of integers (0-255) and send them to the device'''
       buff = ''.join(map(chr, buff)) # convert to bytes
