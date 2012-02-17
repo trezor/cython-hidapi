@@ -17,6 +17,7 @@ It works on Linux, Windows XP and OS X.
 
 Software Dependencies
 ---------------------
+
 * Python (http://python.org/download/)
 * Cython (http://cython.org/#download)
 
