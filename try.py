@@ -18,7 +18,7 @@ if h:
     print "Product: %s" % h.get_product_string()
     print "Serial No: %s" % h.get_serial_number_string()
 
-    # try no-blocking mode by uncommenting this line
+    # try non-blocking mode by uncommenting this line
     #h.set_nonblocking(1)
 
     # try writing some data to the device by uncommenting this line
