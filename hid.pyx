@@ -36,11 +36,17 @@ def enumerate(vendor_id, product_id):
 
 cdef class device:
   cdef hid_device *_c_hid
-  def __cinit__(self, vendor_id, product_id):
+  def open(self, vendor_id, product_id):
       self._c_hid = hid_open(vendor_id, product_id, NULL)
       if self._c_hid == NULL:
           raise IOError('open failed')
 
+  def open_path(self, path):
+      # b = ''.join(map(chr, path))
+      cdef char* cbuff = path
+      self._c_hid = hid_open_path(cbuff)
+      if self._c_hid == NULL:
+          raise IOError('open failed')
   def close(self):
       hid_close(self._c_hid)
 
