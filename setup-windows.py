@@ -7,6 +7,6 @@ import os
 
 setup(
     cmdclass = {'build_ext': build_ext},
-    ext_modules = [Extension("hid", ["hid.pyx", "hid-windows.c"],
+    ext_modules = [Extension("hid", ["hid.pyx", os.path.join(os.getcwd(), "hidapi", "windows", "hid-windows.c")],
                              libraries=["setupapi"])]
 )
