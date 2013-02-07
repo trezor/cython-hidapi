@@ -94,6 +94,22 @@ cdef class device:
       cdef unsigned char* cbuff = buff # covert to c string
       return hid_send_feature_report(self._c_hid, cbuff, len(buff))
 
+  def get_feature_report(self, report_num, max_length):
+      cdef unsigned char lbuff[16]
+      cdef unsigned char* cbuff
+      if max_length <= 16:
+          cbuff = lbuff
+      else:
+          cbuff = <unsigned char *>malloc(max_length)
+      cbuff[0] = report_num
+      n = hid_get_feature_report(self._c_hid, cbuff, max_length)
+      res = []
+      for i in range(n):
+          res.append(cbuff[i])
+      if max_length > 16:
+          free(cbuff)
+      return res
+
   def error(self):
       return U(<wchar_t*>hid_error(self._c_hid))
 
