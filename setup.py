@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-# Depends on libusb-1.0-0-dev, libudev-dev
-
 from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
@@ -10,6 +8,7 @@ import sys
 
 sources = ["hid.pyx"]
 
+# dependencies: libusb-1.0-0-dev, libudev-dev
 if sys.platform.startswith('linux'):
     os.environ['CFLAGS'] = "-I/usr/include/libusb-1.0"
     os.environ['LDFLAGS'] = "-lusb-1.0 -ludev -lrt"
