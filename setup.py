@@ -30,7 +30,7 @@ if sys.platform.startswith('win'):
 
 setup(
     name = 'hidapi',
-    version = '0.7.0',
+    version = '0.7.0-1',
     description = 'A Cython interface to the hidapi from https://github.com/signal11/hidapi',
     author = 'gbishop',
     author_email = 'gb@cs.unc.edu',
