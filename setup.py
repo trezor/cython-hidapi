@@ -13,9 +13,8 @@ import sys
 sources = ["hid.pyx"]
 
 if sys.platform.startswith('linux'):
-    sources_raw = sources[:]
+    sources_raw = ["hid-raw.pyx", "hid-linux-raw.c"] 
     sources.append("hid-libusb.c")
-    sources_raw.append("hid-linux-raw.c")
     libs = ["usb-1.0", "udev", "rt"]
     libs_raw = ["udev", "rt"]
     modules = [Extension("hid",  sources, libraries = libs, extra_compile_args=["-I/usr/include/libusb-1.0"])
