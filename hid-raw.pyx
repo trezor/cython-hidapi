@@ -36,17 +36,11 @@ def enumerate(vendor_id, product_id):
 
 cdef class device:
   cdef hid_device *_c_hid
-  def open(self, vendor_id, product_id):
+  def __cinit__(self, vendor_id, product_id):
       self._c_hid = hid_open(vendor_id, product_id, NULL)
       if self._c_hid == NULL:
           raise IOError('open failed')
 
-  def open_path(self, path):
-      # b = ''.join(map(chr, path))
-      cdef char* cbuff = path
-      self._c_hid = hid_open_path(cbuff)
-      if self._c_hid == NULL:
-          raise IOError('open failed')
   def close(self):
       hid_close(self._c_hid)
 
@@ -60,7 +54,7 @@ cdef class device:
       '''Set the nonblocking flag'''
       return hid_set_nonblocking(self._c_hid, v)
 
-  def read(self, max_length, timeout_ms = 0):
+  def read(self, max_length):
       '''Return a list of integers (0-255) from the device up to max_length bytes.'''
       cdef unsigned char lbuff[16]
       cdef unsigned char* cbuff
@@ -68,10 +62,7 @@ cdef class device:
           cbuff = lbuff
       else:
           cbuff = <unsigned char *>malloc(max_length)
-      if timeout_ms > 0:
-          n = hid_read_timeout(self._c_hid, cbuff, max_length, timeout_ms)
-      else:
-          n = hid_read(self._c_hid, cbuff, max_length)
+      n = hid_read(self._c_hid, cbuff, max_length)
       res = []
       for i in range(n):
           res.append(cbuff[i])

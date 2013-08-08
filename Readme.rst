@@ -38,13 +38,13 @@ Install
     
 For other download options (zip, tarball) visit the github web page of `cython-hidapi <https://github.com/gbishop/cython-hidapi>`_
 
-2. Build cython-hidapi extension module for your platform::
+2. Build cython-hidapi extension module::
 
-    $ python setup[-mac|-windows].py build
+    $ python setup.py build
 
 3. Install cython-hidapi module into your Python distribution::
   
-    $ [sudo] python setup[-mac|-windows].py install
+    $ [sudo] python setup.py install
     
 3. Test install::
 
