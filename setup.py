@@ -1,35 +1,48 @@
 #!/usr/bin/python
-
-# dependencies: libusb-1.0-0-dev, libudev-dev
-
-# python setup.py sdist upload
-
 from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
 import os
 import sys
 
-sources = ["hid.pyx", os.path.join(os.getcwd(), "hidapi", "libusb", "hid.c")]
+hidapi_topdir = os.path.join(os.getcwd(), 'hidapi')
+hidapi_include = os.path.join(hidapi_topdir, 'hidapi')
+def hidapi_src(platform):
+    return os.path.join(hidapi_topdir, platform, 'hid.c')
 
 if sys.platform.startswith('linux'):
-    sources_raw = ["hid-raw.pyx",]
-    libs = ["usb-1.0", "udev", "rt"]
-    libs_raw = ["udev", "rt"]
-    modules = [Extension("hid",  sources, libraries = libs, include_dirs=["/usr/include/libusb-1.0", os.path.join(os.getcwd(), "hidapi", "hidapi")]),
-               Extension("hidraw", sources_raw, libraries=libs_raw, include_dirs=[os.path.join(os.getcwd(), "hidapi", "hidapi")])]
+    modules = [
+        Extension('hid',
+                  sources = ['hid.pyx', hidapi_src('libusb')],
+                  include_dirs = [hidapi_include, '/usr/include/libusb-1.0'],
+                  libraries = ['usb-1.0', 'udev', 'rt'],
+        ),
+        Extension('hidraw',
+                  sources = ['hidraw.pyx', hidapi_src('linux')],
+                  include_dirs = [hidapi_include],
+                  libraries = ['udev', 'rt'],
+        )
+    ]
 
 if sys.platform.startswith('darwin'):
-    os.environ['CFLAGS'] = "-framework IOKit -framework CoreFoundation"
-    os.environ['LDFLAGS'] = ""
-    sources.append("hid-mac.c")
-    libs = []
-    modules = [Extension("hid",  sources, libraries = libs)]
+    os.environ['CFLAGS'] = '-framework IOKit -framework CoreFoundation'
+    os.environ['LDFLAGS'] = ''
+    modules = [
+        Extension('hid',
+                  sources = ['hid.pyx', hidapi_src('mac')],
+                  include_dirs = [hidapi_include],
+                  libraries = [],
+        )
+    ]
 
 if sys.platform.startswith('win'):
-    sources.append("hid-windows.c")
-    libs = ["setupapi"]
-    modules = [Extension("hid",  sources, libraries = libs)]
+    modules = [
+        Extension('hid',
+            sources = ['hid.pyx', hidapi_src('windows')],
+            include_dirs = [hidapi_include],
+            libraries = ['setupapi'],
+        )
+    ]
 
 setup(
     name = 'hidapi',

@@ -10,8 +10,9 @@ for d in hid.enumerate(0, 0):
 
 try:
     print "Opening device"
-    h = hid.device(0x461, 0x20)
-    #h = hid.device(0x1941, 0x8021) # Fine Offset USB Weather Station
+    h = hid.device()
+    h.open(0x461, 0x20)
+    #h.open(0x1941, 0x8021) # Fine Offset USB Weather Station
 
     print "Manufacturer: %s" % h.get_manufacturer_string()
     print "Product: %s" % h.get_product_string()
