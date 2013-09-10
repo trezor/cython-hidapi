@@ -19,7 +19,7 @@ cdef extern from "hidapi.h":
 
   hid_device_info* hid_enumerate(unsigned short, unsigned short)
   void hid_free_enumeration(hid_device_info*)
-  
+
   hid_device* hid_open(unsigned short, unsigned short, void*)
   hid_device* hid_open_path(char *path)
   void hid_close(hid_device *)
@@ -34,7 +34,3 @@ cdef extern from "hidapi.h":
   int hid_get_product_string(hid_device*, wchar_t *, size_t)
   int hid_get_serial_number_string(hid_device*, wchar_t *, size_t)
   wchar_t *hid_error(hid_device *)
-
-
-  
-

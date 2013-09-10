@@ -6,14 +6,14 @@ cython-hidapi
 Description
 -----------
 
-A cython interface to the hidapi from https://github.com/signal11/hidapi with the C modification for windows from http://code.google.com/p/picusb/downloads/detail?name=hidapi_git_mingw_7e93a4e068825d227807.zip&can=2&q= so I could build it with mingw on windows.
+A Cython interface to the HIDAPI from https://github.com/signal11/hidapi
 
 This has been tested with:
 
-* the PIC18F4550 on the development board from CCS with their example program. 
+* the PIC18F4550 on the development board from CCS with their example program.
 * the Fine Offset WH3081 Weather Station.
 
-It works on Linux, Windows XP and OS X. 
+It works on Linux, Windows XP and OS X.
 
 
 Software Dependencies
@@ -33,25 +33,30 @@ Install
 
 1. Download cython-hidapi archive::
 
-    $ git clone https://github.com/gbishop/cython-hidapi.git
+    $ git clone https://github.com/trezor/cython-hidapi.git
     $ cd cython-hidapi
-    
-For other download options (zip, tarball) visit the github web page of `cython-hidapi <https://github.com/gbishop/cython-hidapi>`_
 
-2. Build cython-hidapi extension module::
+For other download options (zip, tarball) visit the github web page of `cython-hidapi <https://github.com/trezor/cython-hidapi>`_
+
+2. Initialize hidapi submodule::
+
+    $ git submodule init
+    $ git submodule update
+
+3. Build cython-hidapi extension module::
 
     $ python setup.py build
 
-3. Install cython-hidapi module into your Python distribution::
-  
+4. Install cython-hidapi module into your Python distribution::
+
     $ [sudo] python setup.py install
-    
-3. Test install::
+
+5. Test install::
 
     $ python
     >>> import hid
     >>>
-    
-5. Try example script::
+
+6. Try example script::
 
     $ python try.py

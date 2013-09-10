@@ -39,7 +39,3 @@ except IOError, ex:
     print "in this script with one from the enumeration list output above and try again."
 
 print "Done"
-
-
-
-

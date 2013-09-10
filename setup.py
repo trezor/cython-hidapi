@@ -13,13 +13,11 @@ import sys
 sources = ["hid.pyx", os.path.join(os.getcwd(), "hidapi", "libusb", "hid.c")]
 
 if sys.platform.startswith('linux'):
-    #sources_raw = ["hid-raw.pyx", "hid-linux-raw.c"] 
     sources_raw = ["hid-raw.pyx",]
-    #sources.append("hid-libusb.c")
     libs = ["usb-1.0", "udev", "rt"]
     libs_raw = ["udev", "rt"]
-    modules = [Extension("hid",  sources, libraries = libs, include_dirs=["/usr/include/libusb-1.0", os.path.join(os.getcwd(), "hidapi", "hidapi")])
-            , Extension("hidraw", sources_raw, libraries=libs_raw, include_dirs=[os.path.join(os.getcwd(), "hidapi", "hidapi")])]
+    modules = [Extension("hid",  sources, libraries = libs, include_dirs=["/usr/include/libusb-1.0", os.path.join(os.getcwd(), "hidapi", "hidapi")]),
+               Extension("hidraw", sources_raw, libraries=libs_raw, include_dirs=[os.path.join(os.getcwd(), "hidapi", "hidapi")])]
 
 if sys.platform.startswith('darwin'):
     os.environ['CFLAGS'] = "-framework IOKit -framework CoreFoundation"
@@ -39,7 +37,7 @@ setup(
     description = 'A Cython interface to the hidapi from https://github.com/signal11/hidapi',
     author = 'gbishop',
     author_email = 'gb@cs.unc.edu',
-    url = 'https://github.com/gbishop/cython-hidapi',
+    url = 'https://github.com/trezor/cython-hidapi',
     classifiers = [
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: Microsoft :: Windows',

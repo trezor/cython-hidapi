@@ -1,6 +1,7 @@
 from chid cimport *
 from libc.stddef cimport wchar_t, size_t
 from cpython.unicode cimport PyUnicode_FromUnicode
+
 cdef extern from "ctype.h":
   int wcslen(wchar_t*)
 
@@ -121,7 +122,3 @@ cdef class device:
 
   def error(self):
       return U(<wchar_t*>hid_error(self._c_hid))
-
-      
-
-  
