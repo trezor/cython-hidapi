@@ -21,7 +21,7 @@ Software Dependencies
 
 * Python (http://python.org/download/)
 * Cython (http://cython.org/#download)
-
+* Udev (libudev-dev) on Linux
 
 License
 -------
