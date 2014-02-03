@@ -46,10 +46,12 @@ if sys.platform.startswith('win'):
 
 setup(
     name = 'hidapi',
-    version = '0.7.0-1',
+    version = '0.7.99-1',
     description = 'A Cython interface to the hidapi from https://github.com/signal11/hidapi',
-    author = 'gbishop',
+    author = 'Gary Bishop',
     author_email = 'gb@cs.unc.edu',
+    maintainer = 'Pavol Rusnak',
+    maintainer_email = 'stick@gk2.sk',
     url = 'https://github.com/trezor/cython-hidapi',
     classifiers = [
         'Operating System :: MacOS :: MacOS X',
