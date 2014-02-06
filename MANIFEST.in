@@ -1,0 +1,5 @@
+include hidapi/hidapi/hidapi.h
+include hidapi/libusb/hid.c
+include hidapi/windows/hid.c
+include hidapi/linux/hid.c
+include hidapi/mac/hid.c
