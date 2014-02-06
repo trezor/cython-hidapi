@@ -1,3 +1,5 @@
 build
 hid.c
 hidraw.c
+MANIFEST
+dist/
