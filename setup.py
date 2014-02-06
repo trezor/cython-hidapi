@@ -7,13 +7,13 @@ import sys
 
 hidapi_topdir = os.path.join(os.getcwd(), 'hidapi')
 hidapi_include = os.path.join(hidapi_topdir, 'hidapi')
-def hidapi_src(platform):
-    return os.path.join(hidapi_topdir, platform, 'hid.c')
+def hidapi_src(platform, source = 'hid.c'):
+    return os.path.join(hidapi_topdir, platform, source)
 
 if sys.platform.startswith('linux'):
     modules = [
         Extension('hid',
-                  sources = ['hid.pyx', 'chid.pxd', hidapi_src('libusb')],
+                  sources = ['hid.pyx', 'chid.pxd', hidapi_src('linux', 'hid-libusb.c')],
                   include_dirs = [hidapi_include, '/usr/include/libusb-1.0'],
                   libraries = ['usb-1.0', 'udev', 'rt'],
         ),
@@ -46,7 +46,7 @@ if sys.platform.startswith('win'):
 
 setup(
     name = 'hidapi',
-    version = '0.7.99-4',
+    version = '0.7.0-1',
     description = 'A Cython interface to the hidapi from https://github.com/signal11/hidapi',
     author = 'Gary Bishop',
     author_email = 'gb@cs.unc.edu',
