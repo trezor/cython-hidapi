@@ -1,5 +1,5 @@
-build
+build/
+dist/
+MANIFEST
 hid.c
 hidraw.c
-MANIFEST
-dist/
