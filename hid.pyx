@@ -29,7 +29,8 @@ def enumerate(vendor_id, product_id):
       'manufacturer_string': U(c.manufacturer_string),
       'product_string': U(c.product_string),
       'usage_page': c.usage_page,
-      'usage': c.usage
+      'usage': c.usage,
+      'interface_number': c.interface_number,
     })
     c = c.next
   hid_free_enumeration(info)
