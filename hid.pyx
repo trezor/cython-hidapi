@@ -1,3 +1,4 @@
+import sys
 from chid cimport *
 from libc.stddef cimport wchar_t, size_t
 from cpython.unicode cimport PyUnicode_FromUnicode
@@ -44,7 +45,6 @@ cdef class device:
           raise IOError('open failed')
 
   def open_path(self, path):
-      # b = ''.join(map(chr, path))
       cdef char* cbuff = path
       self._c_hid = hid_open_path(cbuff)
       if self._c_hid == NULL:
@@ -54,7 +54,11 @@ cdef class device:
 
   def write(self, buff):
       '''Accept a list of integers (0-255) and send them to the device'''
-      buff = ''.join(map(chr, buff)) # convert to bytes
+      # convert to bytes
+      if sys.version_info < (3, 0):
+          buff = ''.join(map(chr, buff))
+      else:
+          buff = bytes(buff)
       cdef unsigned char* cbuff = buff # covert to c string
       return hid_write(self._c_hid, cbuff, len(buff))
 
@@ -101,7 +105,11 @@ cdef class device:
 
   def send_feature_report(self, buff):
       '''Accept a list of integers (0-255) and send them to the device'''
-      buff = ''.join(map(chr, buff)) # convert to bytes
+      # convert to bytes
+      if sys.version_info < (3, 0):
+          buff = ''.join(map(chr, buff))
+      else:
+          buff = bytes(buff)
       cdef unsigned char* cbuff = buff # covert to c string
       return hid_send_feature_report(self._c_hid, cbuff, len(buff))
 
