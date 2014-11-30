@@ -10,11 +10,14 @@ cdef extern from "stdlib.h":
   void free(void* ptr)
   void* malloc(size_t size)
 
+cdef extern from *:
+  object PyUnicode_FromWideChar(const wchar_t *w, Py_ssize_t size)
+
 cdef object U(wchar_t *wcs):
   if wcs == NULL:
     return ''
   cdef int n = wcslen(wcs)
-  return PyUnicode_FromUnicode(<Py_UNICODE*>wcs, n)
+  return PyUnicode_FromWideChar(wcs, n)
 
 def enumerate(vendor_id, product_id):
   cdef hid_device_info* info = hid_enumerate(vendor_id, product_id)
