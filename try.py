@@ -1,7 +1,7 @@
 import hid
 import time
 
-for d in hid.enumerate(0, 0):
+for d in hid.enumerate():
     keys = d.keys()
     keys.sort()
     for key in keys:
