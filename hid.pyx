@@ -10,13 +10,16 @@ cdef extern from "stdlib.h":
   void free(void* ptr)
   void* malloc(size_t size)
 
+cdef extern from *:
+  object PyUnicode_FromWideChar(const wchar_t *w, Py_ssize_t size)
+
 cdef object U(wchar_t *wcs):
   if wcs == NULL:
     return ''
   cdef int n = wcslen(wcs)
-  return PyUnicode_FromUnicode(<Py_UNICODE*>wcs, n)
+  return PyUnicode_FromWideChar(wcs, n)
 
-def enumerate(vendor_id, product_id):
+def enumerate(vendor_id=0, product_id=0):
   cdef hid_device_info* info = hid_enumerate(vendor_id, product_id)
   cdef hid_device_info* c = info
   res = []
@@ -59,8 +62,13 @@ cdef class device:
           buff = ''.join(map(chr, buff))
       else:
           buff = bytes(buff)
+      cdef hid_device * c_hid = self._c_hid
       cdef unsigned char* cbuff = buff # covert to c string
-      return hid_write(self._c_hid, cbuff, len(buff))
+      cdef size_t c_buff_len = len(buff)
+      cdef int result
+      with nogil:
+        result = hid_write(c_hid, cbuff, c_buff_len)
+      return result
 
   def set_nonblocking(self, v):
       '''Set the nonblocking flag'''
@@ -70,14 +78,19 @@ cdef class device:
       '''Return a list of integers (0-255) from the device up to max_length bytes.'''
       cdef unsigned char lbuff[16]
       cdef unsigned char* cbuff
+      cdef size_t c_max_length = max_length
+      cdef int c_timeout_ms = timeout_ms
+      cdef hid_device * c_hid = self._c_hid
       if max_length <= 16:
           cbuff = lbuff
       else:
           cbuff = <unsigned char *>malloc(max_length)
       if timeout_ms > 0:
-          n = hid_read_timeout(self._c_hid, cbuff, max_length, timeout_ms)
+        with nogil:
+            n = hid_read_timeout(c_hid, cbuff, c_max_length, c_timeout_ms)
       else:
-          n = hid_read(self._c_hid, cbuff, max_length)
+        with nogil:
+            n = hid_read(c_hid, cbuff, c_max_length)
       res = []
       for i in range(n):
           res.append(cbuff[i])
@@ -110,18 +123,27 @@ cdef class device:
           buff = ''.join(map(chr, buff))
       else:
           buff = bytes(buff)
+      cdef hid_device * c_hid = self._c_hid
       cdef unsigned char* cbuff = buff # covert to c string
-      return hid_send_feature_report(self._c_hid, cbuff, len(buff))
+      cdef size_t c_buff_len = len(buff)
+      cdef int result
+      with nogil:
+        result = hid_send_feature_report(c_hid, cbuff, c_buff_len)
+      return result
 
   def get_feature_report(self, report_num, max_length):
+      cdef hid_device * c_hid = self._c_hid
       cdef unsigned char lbuff[16]
       cdef unsigned char* cbuff
+      cdef size_t c_max_length = max_length
+      cdef int n
       if max_length <= 16:
           cbuff = lbuff
       else:
           cbuff = <unsigned char *>malloc(max_length)
       cbuff[0] = report_num
-      n = hid_get_feature_report(self._c_hid, cbuff, max_length)
+      with nogil:
+        n = hid_get_feature_report(c_hid, cbuff, c_max_length)
       res = []
       for i in range(n):
           res.append(cbuff[i])
