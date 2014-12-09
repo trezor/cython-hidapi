@@ -12,6 +12,7 @@ cdef extern from "stdlib.h":
 
 cdef extern from *:
   object PyUnicode_FromWideChar(const wchar_t *w, Py_ssize_t size)
+  Py_ssize_t PyUnicode_AsWideChar(object unicode, wchar_t *w, Py_ssize_t size)
 
 cdef object U(wchar_t *wcs):
   if wcs == NULL:
@@ -42,10 +43,26 @@ def enumerate(vendor_id=0, product_id=0):
 
 cdef class device:
   cdef hid_device *_c_hid
-  def open(self, vendor_id, product_id):
-      self._c_hid = hid_open(vendor_id, product_id, NULL)
-      if self._c_hid == NULL:
-          raise IOError('open failed')
+  def open(self, vendor_id=0, product_id=0, serial_number=None):
+      cdef wchar_t * cserial_number = NULL
+      cdef int serial_len
+      cdef Py_ssize_t result
+      try:
+        if serial_number is not None:
+          serial_len = len(serial_number)
+          cserial_number = <wchar_t*>malloc(sizeof(wchar_t) * (serial_len+1))
+          if cserial_number == NULL:
+              raise MemoryError()
+          result = PyUnicode_AsWideChar(serial_number, cserial_number, serial_len)
+          if result == -1:
+              raise ValueError("invalid serial number string")
+          cserial_number[serial_len] = 0  # Must explicitly null-terminate
+        self._c_hid = hid_open(vendor_id, product_id, cserial_number)
+        if self._c_hid == NULL:
+            raise IOError('open failed')
+      finally:
+          if cserial_number != NULL:
+            free(cserial_number)
 
   def open_path(self, path):
       cdef char* cbuff = path
