@@ -25,7 +25,7 @@ Software Dependencies
 
 License
 -------
-You are free to use cython-hidapi code for any purpose.
+cython-hidapi may be used by one of three licenses as outlined in LICENSE.txt.
 
 
 Install
