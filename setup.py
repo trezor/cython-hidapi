@@ -46,7 +46,7 @@ if sys.platform.startswith('win'):
 
 setup(
     name = 'hidapi',
-    version = '0.7.99-5',
+    version = '0.7.99-6',
     description = 'A Cython interface to the hidapi from https://github.com/signal11/hidapi',
     author = 'Gary Bishop',
     author_email = 'gb@cs.unc.edu',
@@ -58,6 +58,8 @@ setup(
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX',
+        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
     ],
     cmdclass = {'build_ext': build_ext},
     ext_modules = modules
