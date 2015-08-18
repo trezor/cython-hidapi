@@ -5,7 +5,7 @@ import hid
 
 class HIDTests(unittest.TestCase):
     def test_enumerate(self):
-        self.assertTrue(len(hid.enumerate()) > 0)
+        self.assertTrue(len(hid.enumerate()) >= 0)
 
 
 if __name__ == '__main__':
