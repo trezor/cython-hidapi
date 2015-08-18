@@ -1,6 +1,9 @@
 cython-hidapi
 =============
 
+.. image:: https://travis-ci.org/trezor/cython-hidapi.svg?branch=master
+    :target: https://travis-ci.org/trezor/cython-hidapi
+
 .. contents::
 
 Description
