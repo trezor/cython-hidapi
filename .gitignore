@@ -3,3 +3,6 @@ dist/
 MANIFEST
 hid.c
 hidraw.c
+
+# Unit test / coverage reports
+.tox/
