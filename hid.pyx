@@ -20,7 +20,7 @@ cdef object U(wchar_t *wcs):
   cdef int n = wcslen(wcs)
   return PyUnicode_FromWideChar(wcs, n)
 
-def enumerate(vendor_id=0, product_id=0):
+def enumerate(int vendor_id=0, int product_id=0):
   cdef hid_device_info* info = hid_enumerate(vendor_id, product_id)
   cdef hid_device_info* c = info
   res = []
@@ -43,7 +43,7 @@ def enumerate(vendor_id=0, product_id=0):
 
 cdef class device:
   cdef hid_device *_c_hid
-  def open(self, vendor_id=0, product_id=0, serial_number=None):
+  def open(self, int vendor_id=0, int product_id=0, bytes serial_number=None):
       cdef wchar_t * cserial_number = NULL
       cdef int serial_len
       cdef Py_ssize_t result
@@ -64,7 +64,7 @@ cdef class device:
           if cserial_number != NULL:
             free(cserial_number)
 
-  def open_path(self, path):
+  def open_path(self, bytes path):
       cdef char* cbuff = path
       self._c_hid = hid_open_path(cbuff)
       if self._c_hid == NULL:
@@ -87,11 +87,11 @@ cdef class device:
         result = hid_write(c_hid, cbuff, c_buff_len)
       return result
 
-  def set_nonblocking(self, v):
+  def set_nonblocking(self, int v):
       '''Set the nonblocking flag'''
       return hid_set_nonblocking(self._c_hid, v)
 
-  def read(self, max_length, timeout_ms = 0):
+  def read(self, int max_length, int timeout_ms=0):
       '''Return a list of integers (0-255) from the device up to max_length bytes.'''
       cdef unsigned char lbuff[16]
       cdef unsigned char* cbuff
@@ -148,7 +148,7 @@ cdef class device:
         result = hid_send_feature_report(c_hid, cbuff, c_buff_len)
       return result
 
-  def get_feature_report(self, report_num, max_length):
+  def get_feature_report(self, int report_num, int max_length):
       cdef hid_device * c_hid = self._c_hid
       cdef unsigned char lbuff[16]
       cdef unsigned char* cbuff
