@@ -1,14 +1,22 @@
 #!/usr/bin/python
-from distutils.core import setup
-from distutils.extension import Extension
-from Cython.Distutils import build_ext
+from setuptools import setup, Extension
 import os
 import sys
 
+setup_args = {}
 hidapi_topdir = os.path.join(os.getcwd(), 'hidapi')
 hidapi_include = os.path.join(hidapi_topdir, 'hidapi')
 def hidapi_src(platform):
     return os.path.join(hidapi_topdir, platform, 'hid.c')
+
+# Add the build_ext command if cython is already installed
+cmdclass = None
+try:
+    from Cython.Distutils import build_ext
+    cmdclass = {'build_ext': build_ext}
+    setup_args['cmdclass'] = cmdclass
+except ImportError:
+    pass
 
 if sys.platform.startswith('linux'):
     modules = [
@@ -68,6 +76,7 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
     ],
-    cmdclass = {'build_ext': build_ext},
-    ext_modules = modules
+    ext_modules = modules,
+    setup_requires = ['cython'],
+    **setup_args
 )
