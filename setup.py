@@ -4,7 +4,7 @@ import os
 import sys
 
 setup_args = {}
-hidapi_topdir = os.path.join(os.getcwd(), 'hidapi')
+hidapi_topdir = os.path.join('hidapi')
 hidapi_include = os.path.join(hidapi_topdir, 'hidapi')
 def hidapi_src(platform):
     return os.path.join(hidapi_topdir, platform, 'hid.c')
@@ -54,7 +54,7 @@ if sys.platform.startswith('win'):
 
 setup(
     name = 'hidapi',
-    version = '0.7.99-7',
+    version = '0.7.99-8',
     description = 'A Cython interface to the hidapi from https://github.com/signal11/hidapi',
     author = 'Gary Bishop',
     author_email = 'gb@cs.unc.edu',
