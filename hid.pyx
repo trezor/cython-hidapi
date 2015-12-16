@@ -43,6 +43,7 @@ def enumerate(int vendor_id=0, int product_id=0):
 
 cdef class device:
   cdef hid_device *_c_hid
+
   def open(self, int vendor_id=0, int product_id=0, bytes serial_number=None):
       cdef wchar_t * cserial_number = NULL
       cdef int serial_len
@@ -58,22 +59,27 @@ cdef class device:
               raise ValueError("invalid serial number string")
           cserial_number[serial_len] = 0  # Must explicitly null-terminate
         self._c_hid = hid_open(vendor_id, product_id, cserial_number)
-        if self._c_hid == NULL:
-            raise IOError('open failed')
       finally:
           if cserial_number != NULL:
             free(cserial_number)
+      if self._c_hid == NULL:
+          raise IOError('open failed')
 
   def open_path(self, bytes path):
       cdef char* cbuff = path
       self._c_hid = hid_open_path(cbuff)
       if self._c_hid == NULL:
           raise IOError('open failed')
+
   def close(self):
-      hid_close(self._c_hid)
+      if self._c_hid != NULL:
+          hid_close(self._c_hid)
+          self._c_hid = NULL
 
   def write(self, buff):
       '''Accept a list of integers (0-255) and send them to the device'''
+      if self._c_hid == NULL:
+          raise ValueError('not open')
       # convert to bytes
       if sys.version_info < (3, 0):
           buff = ''.join(map(chr, buff))
@@ -89,10 +95,14 @@ cdef class device:
 
   def set_nonblocking(self, int v):
       '''Set the nonblocking flag'''
+      if self._c_hid == NULL:
+          raise ValueError('not open')
       return hid_set_nonblocking(self._c_hid, v)
 
   def read(self, int max_length, int timeout_ms=0):
       '''Return a list of integers (0-255) from the device up to max_length bytes.'''
+      if self._c_hid == NULL:
+          raise ValueError('not open')
       cdef unsigned char lbuff[16]
       cdef unsigned char* cbuff
       cdef size_t c_max_length = max_length
@@ -116,24 +126,32 @@ cdef class device:
       return res
 
   def get_manufacturer_string(self):
+      if self._c_hid == NULL:
+          raise ValueError('not open')
       cdef wchar_t buff[255]
       cdef int r = hid_get_manufacturer_string(self._c_hid, buff, 255)
       if not r:
           return U(buff)
 
   def get_product_string(self):
+      if self._c_hid == NULL:
+          raise ValueError('not open')
       cdef wchar_t buff[255]
       cdef int r = hid_get_product_string(self._c_hid, buff, 255)
       if not r:
           return U(buff)
 
   def get_serial_number_string(self):
+      if self._c_hid == NULL:
+          raise ValueError('not open')
       cdef wchar_t buff[255]
       cdef int r = hid_get_serial_number_string(self._c_hid, buff, 255)
       if not r:
           return U(buff)
 
   def send_feature_report(self, buff):
+      if self._c_hid == NULL:
+          raise ValueError('not open')
       '''Accept a list of integers (0-255) and send them to the device'''
       # convert to bytes
       if sys.version_info < (3, 0):
@@ -149,6 +167,8 @@ cdef class device:
       return result
 
   def get_feature_report(self, int report_num, int max_length):
+      if self._c_hid == NULL:
+          raise ValueError('not open')
       cdef hid_device * c_hid = self._c_hid
       cdef unsigned char lbuff[16]
       cdef unsigned char* cbuff
@@ -169,4 +189,6 @@ cdef class device:
       return res
 
   def error(self):
+      if self._c_hid == NULL:
+          raise ValueError('not open')
       return U(<wchar_t*>hid_error(self._c_hid))
