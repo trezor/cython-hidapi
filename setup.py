@@ -19,18 +19,26 @@ except ImportError:
     pass
 
 if sys.platform.startswith('linux'):
-    modules = [
-        Extension('hid',
-                  sources = ['hid.pyx', 'chid.pxd', hidapi_src('libusb')],
-                  include_dirs = [hidapi_include, '/usr/include/libusb-1.0'],
-                  libraries = ['usb-1.0', 'udev', 'rt'],
-        ),
-        Extension('hidraw',
+    modules = []
+    if '--without-libusb' in sys.argv:
+        sys.argv.remove('--without-libusb')
+        hidraw_module = 'hid'
+    else:
+        hidraw_module = 'hidraw'
+        modules.append(
+            Extension('hid',
+                      sources = ['hid.pyx', 'chid.pxd', hidapi_src('libusb')],
+                      include_dirs = [hidapi_include, '/usr/include/libusb-1.0'],
+                      libraries = ['usb-1.0', 'udev', 'rt'],
+            )
+        )
+    modules.append(
+        Extension(hidraw_module,
                   sources = ['hidraw.pyx', hidapi_src('linux')],
                   include_dirs = [hidapi_include],
                   libraries = ['udev', 'rt'],
         )
-    ]
+    )
 
 if sys.platform.startswith('darwin'):
     os.environ['CFLAGS'] = '-framework IOKit -framework CoreFoundation'

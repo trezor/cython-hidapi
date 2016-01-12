@@ -28,6 +28,10 @@ install:
     - pip install "pip>=7.0" wheel
     - pip install -r requirements.txt
 
+env:
+    - EXTRAOPTION=
+    - EXTRAOPTION=--without-libusb
+
 script:
-    - python setup.py install
+    - python setup.py install $EXTRAOPTION
     - python tests.py
