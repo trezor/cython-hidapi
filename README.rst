@@ -24,7 +24,7 @@ Software Dependencies
 
 * Python (http://python.org/download/)
 * Cython (http://cython.org/#download)
-* libusb and libudev on Linux
+* hidraw or libusb and libudev on Linux
 
 License
 -------
@@ -54,6 +54,10 @@ Build from source
 3. Build cython-hidapi extension module::
 
     $ python setup.py build
+
+   To use hidraw API instead of libusb add --without-libusb option::
+
+    $ python setup.py build --without-libusb
 
 4. Install cython-hidapi module into your Python distribution::
 
