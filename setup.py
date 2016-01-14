@@ -27,14 +27,14 @@ if sys.platform.startswith('linux'):
         hidraw_module = 'hidraw'
         modules.append(
             Extension('hid',
-                      sources = ['hid.pyx', hidapi_src('libusb')],
+                      sources = ['hid.pyx', 'chid.pxd', hidapi_src('libusb')],
                       include_dirs = [hidapi_include, '/usr/include/libusb-1.0'],
                       libraries = ['usb-1.0', 'udev', 'rt'],
             )
         )
     modules.append(
         Extension(hidraw_module,
-                  sources = ['hidraw.pyx', hidapi_src('linux')],
+                  sources = ['hidraw.pyx', 'chid.pxd', hidapi_src('linux')],
                   include_dirs = [hidapi_include],
                   libraries = ['udev', 'rt'],
         )
@@ -45,7 +45,7 @@ if sys.platform.startswith('darwin'):
     os.environ['LDFLAGS'] = ''
     modules = [
         Extension('hid',
-                  sources = ['hid.pyx', hidapi_src('mac')],
+                  sources = ['hid.pyx', 'chid.pxd', hidapi_src('mac')],
                   include_dirs = [hidapi_include],
                   libraries = [],
         )
@@ -54,7 +54,7 @@ if sys.platform.startswith('darwin'):
 if sys.platform.startswith('win'):
     modules = [
         Extension('hid',
-            sources = ['hid.pyx', hidapi_src('windows')],
+            sources = ['hid.pyx', 'chid.pxd', hidapi_src('windows')],
             include_dirs = [hidapi_include],
             libraries = ['setupapi'],
         )
@@ -62,7 +62,7 @@ if sys.platform.startswith('win'):
 
 setup(
     name = 'hidapi',
-    version = '0.7.99.post10',
+    version = '0.7.99.post11',
     description = 'A Cython interface to the hidapi from https://github.com/signal11/hidapi',
     author = 'Gary Bishop',
     author_email = 'gb@cs.unc.edu',
