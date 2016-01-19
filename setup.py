@@ -62,7 +62,7 @@ if sys.platform.startswith('win'):
 
 setup(
     name = 'hidapi',
-    version = '0.7.99.post11',
+    version = '0.7.99.post12',
     description = 'A Cython interface to the hidapi from https://github.com/signal11/hidapi',
     author = 'Gary Bishop',
     author_email = 'gb@cs.unc.edu',
@@ -85,6 +85,7 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
     ext_modules = modules,
-    setup_requires = ['cython'],
+    setup_requires = ['Cython'],
+    install_requires = ['Cython'],
     **setup_args
 )
