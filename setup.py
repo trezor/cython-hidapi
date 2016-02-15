@@ -27,16 +27,16 @@ if sys.platform.startswith('linux'):
         hidraw_module = 'hidraw'
         modules.append(
             Extension('hid',
-                      sources = ['hid.pyx', 'chid.pxd', hidapi_src('libusb')],
-                      include_dirs = [hidapi_include, '/usr/include/libusb-1.0'],
-                      libraries = ['usb-1.0', 'udev', 'rt'],
+                sources = ['hid.pyx', 'chid.pxd', hidapi_src('libusb')],
+                include_dirs = [hidapi_include, '/usr/include/libusb-1.0'],
+                libraries = ['usb-1.0', 'udev', 'rt'],
             )
         )
     modules.append(
         Extension(hidraw_module,
-                  sources = ['hidraw.pyx', 'chid.pxd', hidapi_src('linux')],
-                  include_dirs = [hidapi_include],
-                  libraries = ['udev', 'rt'],
+            sources = ['hidraw.pyx', 'chid.pxd', hidapi_src('linux')],
+            include_dirs = [hidapi_include],
+            libraries = ['udev', 'rt'],
         )
     )
 
@@ -45,9 +45,9 @@ if sys.platform.startswith('darwin'):
     os.environ['LDFLAGS'] = ''
     modules = [
         Extension('hid',
-                  sources = ['hid.pyx', 'chid.pxd', hidapi_src('mac')],
-                  include_dirs = [hidapi_include],
-                  libraries = [],
+            sources = ['hid.pyx', 'chid.pxd', hidapi_src('mac')],
+            include_dirs = [hidapi_include],
+            libraries = [],
         )
     ]
 
@@ -57,6 +57,15 @@ if sys.platform.startswith('win'):
             sources = ['hid.pyx', 'chid.pxd', hidapi_src('windows')],
             include_dirs = [hidapi_include],
             libraries = ['setupapi'],
+        )
+    ]
+
+if 'bsd' in sys.platform:
+    modules = [
+        Extension('hid',
+            sources = ['hid.pyx', 'chid.pxd', hidapi_src('libusb')],
+            include_dirs = [hidapi_include, '/usr/include/libusb-1.0'],
+            libraries = ['usb-1.0'],
         )
     ]
 
