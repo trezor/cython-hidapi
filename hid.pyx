@@ -118,6 +118,8 @@ cdef class device:
       else:
         with nogil:
             n = hid_read(c_hid, cbuff, c_max_length)
+      if n is -1:
+          raise IOError('read error')
       res = []
       for i in range(n):
           res.append(cbuff[i])
