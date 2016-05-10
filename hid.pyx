@@ -44,7 +44,7 @@ def enumerate(int vendor_id=0, int product_id=0):
 cdef class device:
   cdef hid_device *_c_hid
 
-  def open(self, int vendor_id=0, int product_id=0, bytes serial_number=None):
+  def open(self, int vendor_id=0, int product_id=0, unicode serial_number=None):
       cdef wchar_t * cserial_number = NULL
       cdef int serial_len
       cdef Py_ssize_t result
