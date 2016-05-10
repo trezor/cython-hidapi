@@ -95,6 +95,6 @@ setup(
     ],
     ext_modules = modules,
     setup_requires = ['Cython'],
-    install_requires = ['Cython'],
+    install_requires = [],
     **setup_args
 )
