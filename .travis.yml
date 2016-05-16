@@ -23,7 +23,7 @@ python:
 
 install:
     # Optimisation: build requirements as wheels, which get cached by Travis
-    - pip install "pip>=7.0" wheel
+    - pip install "pip>=8.0" "wheel" "setuptools>=19.0"
     - pip install -r requirements.txt
 
 env:

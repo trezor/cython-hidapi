@@ -1,1 +1,1 @@
-cython
+Cython>=0.24
