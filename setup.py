@@ -3,20 +3,10 @@ from setuptools import setup, Extension
 import os
 import sys
 
-setup_args = {}
 hidapi_topdir = os.path.join('hidapi')
 hidapi_include = os.path.join(hidapi_topdir, 'hidapi')
 def hidapi_src(platform):
     return os.path.join(hidapi_topdir, platform, 'hid.c')
-
-# Add the build_ext command if cython is already installed
-cmdclass = None
-try:
-    from Cython.Distutils import build_ext
-    cmdclass = {'build_ext': build_ext}
-    setup_args['cmdclass'] = cmdclass
-except ImportError:
-    pass
 
 if sys.platform.startswith('linux'):
     modules = []
@@ -71,7 +61,7 @@ if 'bsd' in sys.platform:
 
 setup(
     name = 'hidapi',
-    version = '0.7.99.post15',
+    version = '0.7.99.post16',
     description = 'A Cython interface to the hidapi from https://github.com/signal11/hidapi',
     author = 'Gary Bishop',
     author_email = 'gb@cs.unc.edu',
@@ -95,6 +85,5 @@ setup(
     ],
     ext_modules = modules,
     setup_requires = ['Cython'],
-    install_requires = ['Cython'],
-    **setup_args
+    install_requires = [],
 )
