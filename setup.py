@@ -41,7 +41,7 @@ if sys.platform.startswith('darwin'):
         )
     ]
 
-if sys.platform.startswith('win'):
+if sys.platform.startswith('win') or sys.platform.startswith('cygwin'):
     modules = [
         Extension('hid',
             sources = ['hid.pyx', 'chid.pxd', hidapi_src('windows')],
