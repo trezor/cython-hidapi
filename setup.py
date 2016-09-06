@@ -61,7 +61,7 @@ if 'bsd' in sys.platform:
 
 setup(
     name = 'hidapi',
-    version = '0.7.99.post17',
+    version = '0.7.99.post18',
     description = 'A Cython interface to the hidapi from https://github.com/signal11/hidapi',
     author = 'Gary Bishop',
     author_email = 'gb@cs.unc.edu',
