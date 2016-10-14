@@ -9,34 +9,38 @@ cython-hidapi
 Description
 -----------
 
-A Cython interface to the HIDAPI from https://github.com/signal11/hidapi
+A Cython interface to `HIDAPI <https://github.com/signal11/hidapi>`_ library.
 
 This has been tested with:
 
-* the PIC18F4550 on the development board from CCS with their example program.
-* the Fine Offset WH3081 Weather Station.
+* `TREZOR <https://trezor.io/>`_ Hardware Wallet
+* the PIC18F4550 on the development board from CCS with their example program
+* the Fine Offset WH3081 Weather Station
 
-It works on Linux, Windows XP and OS X.
-
+It works on Linux, Windows and macOS.
 
 Software Dependencies
 ---------------------
 
-* Python (http://python.org/download/)
-* Cython (http://cython.org/#download)
-* hidraw or libusb and libudev on Linux
+* `Python <http://python.org>`_
+* `Cython <http://cython.org>`_
+* hidraw or libusb+libudev on Linux
 
 License
 -------
-cython-hidapi may be used by one of three licenses as outlined in LICENSE.txt.
 
+cython-hidapi may be used by one of three licenses as outlined in LICENSE.txt
 
 Install
 -------
 
-    $ pip install hidapi
+::
 
-For other download options visit the PyPi page of cython-hidapi (https://pypi.python.org/pypi/hidapi/)
+    $ sudo apt-get install python-dev libusb-1.0-0-dev libudev-dev
+    $ sudo pip install --upgrade setuptools
+    $ sudo pip install hidapi
+
+For other download options visit the `PyPi page <https://pypi.python.org/pypi/hidapi/>`_.
 
 Build from source
 -----------------
@@ -48,8 +52,7 @@ Build from source
 
 2. Initialize hidapi submodule::
 
-    $ git submodule init
-    $ git submodule update
+    $ git submodule update --init
 
 3. Build cython-hidapi extension module::
 
@@ -61,7 +64,7 @@ Build from source
 
 4. Install cython-hidapi module into your Python distribution::
 
-    $ [sudo] python setup.py install
+    $ sudo python setup.py install
 
 5. Test install::
 
