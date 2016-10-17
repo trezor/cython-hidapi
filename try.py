@@ -1,42 +1,54 @@
+from __future__ import print_function
+
 import hid
 import time
 
+# enumerate USB devices
+
 for d in hid.enumerate():
-    keys = d.keys()
+    keys = list(d.keys())
     keys.sort()
     for key in keys:
-        print "%s : %s" % (key, d[key])
-    print ""
+        print("%s : %s" % (key, d[key]))
+    print()
+
+# try opening a device, then perform write and read
 
 try:
-    print "Opening device"
+    print("Opening the device")
+
     h = hid.device()
-    h.open(0x461, 0x20)
-    #h.open(0x1941, 0x8021) # Fine Offset USB Weather Station
+    h.open(0x534c, 0x0001) # TREZOR VendorID/ProductID
 
-    print "Manufacturer: %s" % h.get_manufacturer_string()
-    print "Product: %s" % h.get_product_string()
-    print "Serial No: %s" % h.get_serial_number_string()
+    print("Manufacturer: %s" % h.get_manufacturer_string())
+    print("Product: %s" % h.get_product_string())
+    print("Serial No: %s" % h.get_serial_number_string())
 
-    # try non-blocking mode by uncommenting the next line
-    #h.set_nonblocking(1)
+    # enable non-blocking mode
+    h.set_nonblocking(1)
 
-    # try writing some data to the device
-    for k in range(10):
-        for i in [0, 1]:
-            for j in [0, 1]:
-                h.write([0x80, i, j])
-                d = h.read(5)
-                if d:
-                    print d
-                time.sleep(0.05)
+    # write some data to the device
+    print("Write the data")
+    h.write([0, 63, 35, 35] + [0] * 61)
 
-    print "Closing device"
+    # wait
+    time.sleep(0.05)
+
+    # read back the answer
+    print("Read the data")
+    while True:
+        d = h.read(64)
+        if d:
+            print(d)
+        else:
+            break
+
+    print("Closing the device")
     h.close()
 
-except IOError, ex:
-    print ex
-    print "You probably don't have the hard coded test hid. Update the hid.device line"
-    print "in this script with one from the enumeration list output above and try again."
+except IOError as ex:
+    print(ex)
+    print("You probably don't have the hard coded device. Update the hid.device line")
+    print("in this script with one from the enumeration list output above and try again.")
 
-print "Done"
+print("Done")
