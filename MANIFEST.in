@@ -5,3 +5,4 @@ include hidapi/mac/hid.c
 include hidapi/windows/hid.c
 include LICENSE*.txt
 include tests.py
+include try.py
