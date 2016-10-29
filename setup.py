@@ -5,8 +5,17 @@ import sys
 
 hidapi_topdir = os.path.join('hidapi')
 hidapi_include = os.path.join(hidapi_topdir, 'hidapi')
+system_hidapi = 0
+libs= []
+src = ['hid.pyx', 'chid.pxd']
+
 def hidapi_src(platform):
     return os.path.join(hidapi_topdir, platform, 'hid.c')
+
+if '--with-system-hidapi' in sys.argv:
+    sys.argv.remove('--with-system-hidapi')
+    system_hidapi = 1
+    hidapi_include = '/usr/include/hidapi'
 
 if sys.platform.startswith('linux'):
     modules = []
@@ -15,47 +24,72 @@ if sys.platform.startswith('linux'):
         hidraw_module = 'hid'
     else:
         hidraw_module = 'hidraw'
+        libs = ['usb-1.0', 'udev', 'rt']
+        if system_hidapi == 1:
+            libs.append('hidapi-libusb')
+        else:
+            src.append(hidapi_src('libusb'))
         modules.append(
             Extension('hid',
-                sources = ['hid.pyx', 'chid.pxd', hidapi_src('libusb')],
+                sources = src,
                 include_dirs = [hidapi_include, '/usr/include/libusb-1.0'],
-                libraries = ['usb-1.0', 'udev', 'rt'],
+                libraries = libs,
             )
         )
+    libs = ['udev', 'rt']
+    src = ['hid.pyx', 'chid.pxd']
+    if system_hidapi == 1:
+        libs.append('hidapi-hidraw')
+    else:
+        src.append(hidapi_src('linux'))
     modules.append(
         Extension(hidraw_module,
-            sources = ['hidraw.pyx', 'chid.pxd', hidapi_src('linux')],
+            sources = src,
             include_dirs = [hidapi_include],
-            libraries = ['udev', 'rt'],
+            libraries = libs,
         )
     )
 
 if sys.platform.startswith('darwin'):
     os.environ['CFLAGS'] = '-framework IOKit -framework CoreFoundation'
     os.environ['LDFLAGS'] = ''
+    if system_hidapi == True:
+        libs.append('hidapi')
+    else:
+        src.append(hidapi_src('mac'))
     modules = [
         Extension('hid',
-            sources = ['hid.pyx', 'chid.pxd', hidapi_src('mac')],
+            sources = src,
             include_dirs = [hidapi_include],
-            libraries = [],
+            libraries = libs,
         )
     ]
 
 if sys.platform.startswith('win') or sys.platform.startswith('cygwin'):
+    libs = ['setupapi']
+    if system_hidapi == True:
+        libs.append('hidapi')
+    else:
+        src.append(hidapi_src('windows'))
     modules = [
         Extension('hid',
-            sources = ['hid.pyx', 'chid.pxd', hidapi_src('windows')],
+            sources = src,
             include_dirs = [hidapi_include],
-            libraries = ['setupapi'],
+            libraries = libs,
         )
     ]
 
 if 'bsd' in sys.platform:
+    libs = ['usb-1.0']
+    if system_hidapi == True:
+        libs.append('hidapi-libusb')
+    else:
+        src.append(hidapi_src('libusb'))
     modules = [
         Extension('hid',
-            sources = ['hid.pyx', 'chid.pxd', hidapi_src('libusb')],
+            sources = src,
             include_dirs = [hidapi_include, '/usr/include/libusb-1.0'],
-            libraries = ['usb-1.0'],
+            libraries = libs,
         )
     ]
 
