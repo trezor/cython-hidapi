@@ -4,6 +4,9 @@ cython-hidapi
 .. image:: https://travis-ci.org/trezor/cython-hidapi.svg?branch=master
     :target: https://travis-ci.org/trezor/cython-hidapi
 
+.. image:: https://ci.appveyor.com/api/projects/status/t6ismmehxcvwp3tq?svg=true
+    :target: https://ci.appveyor.com/project/prusnak/cython-hidapi
+
 .. contents::
 
 Description
