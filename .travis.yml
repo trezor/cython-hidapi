@@ -8,8 +8,6 @@ cache:
   directories:
     - $HOME/.cache/pip
 
-# NB: Packages are whitelisted, additions can be requested
-#     https://github.com/travis-ci/apt-package-whitelist
 addons:
     apt:
         packages:
@@ -20,6 +18,7 @@ python:
     - "2.7"
     - "3.4"
     - "3.5"
+    - "3.6"
 
 install:
     # Optimisation: build requirements as wheels, which get cached by Travis
