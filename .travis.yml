@@ -32,3 +32,11 @@ env:
 script:
     - python setup.py install $EXTRAOPTION
     - python tests.py
+
+notifications:
+  webhooks:
+    urls:
+      - http://ci-bot.satoshilabs.com:5000/travis
+    on_success: always
+    on_failure: always
+    on_start: always
