@@ -23,6 +23,7 @@ python:
 install:
     # Optimisation: build requirements as wheels, which get cached by Travis
     - pip install "pip>=8.0" "wheel" "setuptools>=19.0"
+    - pip install tox-travis
     - pip install -r requirements.txt
 
 env:
@@ -31,7 +32,7 @@ env:
 
 script:
     - python setup.py install $EXTRAOPTION
-    - python tests.py
+    - tox
 
 notifications:
   webhooks:
