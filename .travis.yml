@@ -1,3 +1,5 @@
+dist: trusty
+
 language: python
 
 # Runs jobs on container based infrastructure
@@ -11,6 +13,7 @@ cache:
 addons:
     apt:
         packages:
+            - libhidapi-dev
             - libudev-dev
             - libusb-1.0-0-dev
 
@@ -29,6 +32,8 @@ install:
 env:
     - EXTRAOPTION=
     - EXTRAOPTION=--without-libusb
+    - EXTRAOPTION=--with-system-hidapi
+    - EXTRAOPTION=--with-system-hidapi --without-libusb
 
 script:
     - python setup.py install $EXTRAOPTION
