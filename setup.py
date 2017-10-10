@@ -37,7 +37,7 @@ if sys.platform.startswith('linux'):
             )
         )
     libs = ['udev', 'rt']
-    src = ['hid.pyx', 'chid.pxd']
+    src = ['hidraw.pyx', 'chid.pxd']
     if system_hidapi == 1:
         libs.append('hidapi-hidraw')
     else:
