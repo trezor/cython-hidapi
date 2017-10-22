@@ -1,5 +1,10 @@
 environment:
 
+  TWINE_USERNAME: bauerj
+  # The encrypted password, used for deploying.
+  TWINE_PASSWORD: 
+    secure: nJvSXE3tRtnBNSmQNZ0oZg==
+
   global:
     # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
     # /E:ON and /V:ON options are not enabled in the batch script intepreter
@@ -65,8 +70,8 @@ install:
   # about it being out of date.
   - "pip install --disable-pip-version-check --user --upgrade pip"
 
-  # Install support for 'bdist_wheel' and update setuptools.
-  - "pip install --upgrade wheel setuptools"
+  # Install twine, support for 'bdist_wheel' and update setuptools.
+  - "pip install --upgrade wheel setuptools twine"
 
   # Install the build dependencies of the project. If some dependencies contain
   # compiled extensions and are not provided as pre-built wheel packages,
@@ -90,6 +95,5 @@ artifacts:
   # Archive the generated packages in the ci.appveyor.com build report.
   - path: dist\*.whl
 
-#on_success:
-#  - TODO: upload the content of dist/*.whl to a public wheelhouse
-#
+on_success:
+  - if "%APPVEYOR_REPO_TAG%"=="true" ( twine upload dist\*.whl )
