@@ -78,3 +78,12 @@ Build from source
 6. Try example script::
 
     $ python try.py
+
+Udev rules
+----------
+
+For correct functionality under Linux, you need to create a rule file similar
+to `this one <https://raw.githubusercontent.com/trezor/trezor-common/master/udev/51-trezor.rules>`_
+in your udev rules directory.
+
+Also you might need to call ``udevadm control --reload-rules`` to reload the rules.
