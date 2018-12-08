@@ -75,6 +75,7 @@ cdef class device:
       if self._c_hid != NULL:
           hid_close(self._c_hid)
           self._c_hid = NULL
+          hid_exit()
 
   def write(self, buff):
       '''Accept a list of integers (0-255) and send them to the device'''
