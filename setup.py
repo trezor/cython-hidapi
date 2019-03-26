@@ -15,7 +15,6 @@ def hidapi_src(platform):
 if '--with-system-hidapi' in sys.argv:
     sys.argv.remove('--with-system-hidapi')
     system_hidapi = 1
-    hidapi_include = '/usr/include/hidapi'
 
 if sys.platform.startswith('linux'):
     modules = []
@@ -25,14 +24,16 @@ if sys.platform.startswith('linux'):
     else:
         hidraw_module = 'hidraw'
         libs = ['usb-1.0', 'udev', 'rt']
+        hidapi_libusb_inc = [hidapi_topdir]
         if system_hidapi == 1:
             libs.append('hidapi-libusb')
         else:
             src.append(hidapi_src('libusb'))
+            hidapi_libusb_inc += [hidapi_include, '/usr/include/libusb-1.0']
         modules.append(
             Extension('hid',
                 sources = src,
-                include_dirs = [hidapi_include, '/usr/include/libusb-1.0'],
+                include_dirs = hidapi_libusb_inc,
                 libraries = libs,
             )
         )
@@ -45,7 +46,7 @@ if sys.platform.startswith('linux'):
     modules.append(
         Extension(hidraw_module,
             sources = src,
-            include_dirs = [hidapi_include],
+            include_dirs = [hidapi_topdir, hidapi_include],
             libraries = libs,
         )
     )
@@ -60,7 +61,7 @@ if sys.platform.startswith('darwin'):
     modules = [
         Extension('hid',
             sources = src,
-            include_dirs = [hidapi_include],
+            include_dirs = [hidapi_topdir, hidapi_include],
             libraries = libs,
         )
     ]
@@ -74,7 +75,7 @@ if sys.platform.startswith('win') or sys.platform.startswith('cygwin'):
     modules = [
         Extension('hid',
             sources = src,
-            include_dirs = [hidapi_include],
+            include_dirs = [hidapi_topdir, hidapi_include],
             libraries = libs,
         )
     ]
@@ -88,7 +89,7 @@ if 'bsd' in sys.platform:
     modules = [
         Extension('hid',
             sources = src,
-            include_dirs = [hidapi_include, '/usr/include/libusb-1.0'],
+            include_dirs = [hidapi_topdir, hidapi_include, '/usr/include/libusb-1.0'],
             libraries = libs,
         )
     ]

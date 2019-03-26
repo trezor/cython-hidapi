@@ -1,6 +1,6 @@
 from libc.stddef cimport wchar_t, size_t
 
-cdef extern from "hidapi.h":
+cdef extern from "hidapi/hidapi.h":
   ctypedef struct hid_device:
     pass
 
