@@ -185,7 +185,7 @@ cdef class device:
       with nogil:
         n = hid_get_feature_report(c_hid, cbuff, c_max_length)
       res = []
-      if n is -1:
+      if n < 0:
           raise IOError('read error')
       for i in range(n):
           res.append(cbuff[i])
