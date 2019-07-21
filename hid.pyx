@@ -133,24 +133,28 @@ cdef class device:
           raise ValueError('not open')
       cdef wchar_t buff[255]
       cdef int r = hid_get_manufacturer_string(self._c_hid, buff, 255)
-      if not r:
-          return U(buff)
+      if r == -1:
+          raise IOError('get manufacturer string error')
+      return U(buff)
+      
 
   def get_product_string(self):
       if self._c_hid == NULL:
           raise ValueError('not open')
       cdef wchar_t buff[255]
       cdef int r = hid_get_product_string(self._c_hid, buff, 255)
-      if not r:
-          return U(buff)
+      if r == -1:
+          raise IOError('get product string error')
+      return U(buff)
 
   def get_serial_number_string(self):
       if self._c_hid == NULL:
           raise ValueError('not open')
       cdef wchar_t buff[255]
       cdef int r = hid_get_serial_number_string(self._c_hid, buff, 255)
-      if not r:
-          return U(buff)
+      if r == -1:
+          raise IOError('get serial number string error')
+      return U(buff)
 
   def send_feature_report(self, buff):
       if self._c_hid == NULL:
