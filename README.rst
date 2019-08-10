@@ -12,7 +12,7 @@ cython-hidapi
 Description
 -----------
 
-A Cython interface to `HIDAPI <https://github.com/signal11/hidapi>`_ library.
+A Cython interface to `HIDAPI <https://github.com/libusb/hidapi>`_ library.
 
 This has been tested with:
 
