@@ -80,18 +80,23 @@ if sys.platform.startswith('win') or sys.platform.startswith('cygwin'):
     ]
 
 if 'bsd' in sys.platform:
-    libs = ['usb-1.0']
-    if system_hidapi == True:
-        libs.append('hidapi-libusb')
+    if 'freebsd' in sys.platform:
+        libs = ['usb', 'hidapi']
+        include_dirs_bsd = ['/usr/local/include/hidapi']
     else:
-        src.append(hidapi_src('libusb'))
+        libs = ['usb-1.0']
+        include_dirs_bsd = [hidapi_include, '/usr/include/libusb-1.0']
+        if system_hidapi == True:
+            libs.append('hidapi-libusb')
+        else:
+            src.append(hidapi_src('libusb'))
     modules = [
         Extension('hid',
             sources = src,
-            include_dirs = [hidapi_include, '/usr/include/libusb-1.0'],
+            include_dirs = include_dirs_bsd,
             libraries = libs,
-        )
-    ]
+            )
+        ]
 
 setup(
     name = 'hidapi',
