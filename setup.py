@@ -51,7 +51,7 @@ if sys.platform.startswith('linux'):
     )
 
 if sys.platform.startswith('darwin'):
-    os.environ['CFLAGS'] = '-framework IOKit -framework CoreFoundation'
+    os.environ['CFLAGS'] = '-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -framework IOKit -framework CoreFoundation'
     os.environ['LDFLAGS'] = ''
     if system_hidapi == True:
         libs.append('hidapi')
