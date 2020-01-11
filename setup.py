@@ -2,6 +2,7 @@
 from setuptools import setup, Extension
 import os
 import sys
+import subprocess
 
 hidapi_topdir = os.path.join('hidapi')
 hidapi_include = os.path.join(hidapi_topdir, 'hidapi')
@@ -51,7 +52,8 @@ if sys.platform.startswith('linux'):
     )
 
 if sys.platform.startswith('darwin'):
-    os.environ['CFLAGS'] = '-isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -framework IOKit -framework CoreFoundation'
+    macos_sdk_path = subprocess.check_output(['xcrun', '--show-sdk-path'])
+    os.environ['CFLAGS'] = '-isysroot "%s" -framework IOKit -framework CoreFoundation' % macos_sdk_path.strip()
     os.environ['LDFLAGS'] = ''
     if system_hidapi == True:
         libs.append('hidapi')
