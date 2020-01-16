@@ -87,7 +87,10 @@ if 'bsd' in sys.platform:
         include_dirs_bsd = ['/usr/local/include/hidapi']
     else:
         libs = ['usb-1.0']
-        include_dirs_bsd = [hidapi_include, '/usr/include/libusb-1.0']
+        include_dirs_bsd = [hidapi_include,
+                            '/usr/include/libusb-1.0',
+                            '/usr/local/include/libusb-1.0',
+                            '/usr/local/include/']
         if system_hidapi == True:
             libs.append('hidapi-libusb')
         else:
