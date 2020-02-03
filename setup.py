@@ -110,7 +110,7 @@ setup(
     author = 'Gary Bishop',
     author_email = 'gb@cs.unc.edu',
     maintainer = 'Pavol Rusnak',
-    maintainer_email = 'stick@gk2.sk',
+    maintainer_email = 'pavol@rusnak.io',
     url = 'https://github.com/trezor/cython-hidapi',
     package_dir = {'hid': 'hidapi/*'},
     classifiers = [
