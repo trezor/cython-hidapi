@@ -18,10 +18,10 @@ addons:
             - libusb-1.0-0-dev
 
 python:
-    - "2.7"
-    - "3.4"
     - "3.5"
     - "3.6"
+    - "3.7"
+    - "3.8"
 
 install:
     # Optimisation: build requirements as wheels, which get cached by Travis
