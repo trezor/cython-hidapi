@@ -34,4 +34,5 @@ cdef extern from "hidapi.h":
   int hid_get_manufacturer_string(hid_device*, wchar_t *, size_t)
   int hid_get_product_string(hid_device*, wchar_t *, size_t)
   int hid_get_serial_number_string(hid_device*, wchar_t *, size_t)
+  int hid_get_indexed_string(hid_device*, int, wchar_t *, size_t)
   wchar_t *hid_error(hid_device *)

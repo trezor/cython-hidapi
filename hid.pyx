@@ -156,6 +156,16 @@ cdef class device:
           raise IOError('get serial number string error')
       return U(buff)
 
+  def get_indexed_string(self, index):
+    if self._c_hid == NULL:
+      raise ValueError('not open')
+    cdef wchar_t buff[255]
+    cdef unsigned char c_index = index
+    cdef int r = hid_get_indexed_string(self._c_hid, c_index, buff, 255)
+    if r < 0:
+        raise IOError('get indexed string error')
+    return U(buff)
+
   def send_feature_report(self, buff):
       if self._c_hid == NULL:
           raise ValueError('not open')
