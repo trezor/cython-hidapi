@@ -19,7 +19,6 @@ cdef extern from "hidapi.h":
 
   hid_device_info* hid_enumerate(unsigned short, unsigned short)
   void hid_free_enumeration(hid_device_info*)
-  int hid_exit()
 
   hid_device* hid_open(unsigned short, unsigned short, const wchar_t*)
   hid_device* hid_open_path(char *path)
