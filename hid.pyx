@@ -206,6 +206,30 @@ cdef class device:
           free(cbuff)
       return res
 
+  def get_input_report(self, int report_num, int max_length):
+      if self._c_hid == NULL:
+          raise ValueError('not open')
+      cdef hid_device * c_hid = self._c_hid
+      cdef unsigned char lbuff[16]
+      cdef unsigned char* cbuff
+      cdef size_t c_max_length = max_length
+      cdef int n
+      if max_length <= 16:
+          cbuff = lbuff
+      else:
+          cbuff = <unsigned char *>malloc(max_length)
+      cbuff[0] = report_num
+      with nogil:
+          n = hid_get_input_report(c_hid, cbuff, c_max_length)
+      res = []
+      if n < 0:
+          raise IOError('read error')
+      for i in range(n):
+          res.append(cbuff[i])
+      if max_length > 16:
+          free(cbuff)
+      return res
+
   def error(self):
       if self._c_hid == NULL:
           raise ValueError('not open')
