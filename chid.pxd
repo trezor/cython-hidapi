@@ -29,6 +29,7 @@ cdef extern from "hidapi.h":
   int hid_set_nonblocking(hid_device* device, int value)
   int hid_send_feature_report(hid_device* device, unsigned char *data, int length) nogil
   int hid_get_feature_report(hid_device* device, unsigned char *data, int length) nogil
+  int hid_get_input_report(hid_device* device, unsigned char *data, int length) nogil
 
   int hid_get_manufacturer_string(hid_device*, wchar_t *, size_t)
   int hid_get_product_string(hid_device*, wchar_t *, size_t)
