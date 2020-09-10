@@ -17,7 +17,7 @@ cdef extern from "hidapi.h":
     int interface_number
     hid_device_info *next
 
-  hid_device_info* hid_enumerate(unsigned short, unsigned short)
+  hid_device_info* hid_enumerate(unsigned short, unsigned short) nogil
   void hid_free_enumeration(hid_device_info*)
 
   hid_device* hid_open(unsigned short, unsigned short, const wchar_t*)
