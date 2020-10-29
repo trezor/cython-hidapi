@@ -21,7 +21,9 @@ cdef object U(wchar_t *wcs):
   return PyUnicode_FromWideChar(wcs, n)
 
 def enumerate(int vendor_id=0, int product_id=0):
-  cdef hid_device_info* info = hid_enumerate(vendor_id, product_id)
+  cdef hid_device_info* info
+  with nogil:
+    info = hid_enumerate(vendor_id, product_id)
   cdef hid_device_info* c = info
   res = []
   while c:
