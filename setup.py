@@ -53,7 +53,7 @@ if sys.platform.startswith('linux'):
 
 if sys.platform.startswith('darwin'):
     macos_sdk_path = subprocess.check_output(['xcrun', '--show-sdk-path']).decode().strip()
-    os.environ['CFLAGS'] = '-isysroot "%s" -framework IOKit -framework CoreFoundation' % macos_sdk_path
+    os.environ['CFLAGS'] = '-isysroot "%s" -framework IOKit -framework CoreFoundation -framework AppKit' % macos_sdk_path
     os.environ['LDFLAGS'] = ''
     if system_hidapi == True:
         libs.append('hidapi')
