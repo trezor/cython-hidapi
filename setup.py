@@ -105,7 +105,7 @@ if 'bsd' in sys.platform:
 
 setup(
     name = 'hidapi',
-    version = '0.10.0.post1',
+    version = '0.10.1',
     description = 'A Cython interface to the hidapi from https://github.com/libusb/hidapi',
     author = 'Gary Bishop',
     author_email = 'gb@cs.unc.edu',
