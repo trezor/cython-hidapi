@@ -18,7 +18,7 @@ try:
     print("Opening the device")
 
     h = hid.device()
-    h.open(0x534c, 0x0001) # TREZOR VendorID/ProductID
+    h.open(0x534C, 0x0001)  # TREZOR VendorID/ProductID
 
     print("Manufacturer: %s" % h.get_manufacturer_string())
     print("Product: %s" % h.get_product_string())
@@ -48,7 +48,8 @@ try:
 
 except IOError as ex:
     print(ex)
-    print("You probably don't have the hard coded device. Update the hid.device line")
-    print("in this script with one from the enumeration list output above and try again.")
+    print("You probably don't have the hard-coded device.")
+    print("Update the h.open() line in this script with the one")
+    print("from the enumeration list output above and try again.")
 
 print("Done")
