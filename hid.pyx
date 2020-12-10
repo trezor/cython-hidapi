@@ -110,23 +110,25 @@ cdef class device:
         cdef size_t c_max_length = max_length
         cdef int c_timeout_ms = timeout_ms
         cdef hid_device * c_hid = self._c_hid
-        if max_length <= 16:
-            cbuff = lbuff
-        else:
-            cbuff = <unsigned char *>malloc(max_length)
-        if timeout_ms > 0:
-            with nogil:
-                n = hid_read_timeout(c_hid, cbuff, c_max_length, c_timeout_ms)
-        else:
-            with nogil:
-                n = hid_read(c_hid, cbuff, c_max_length)
-        if n is -1:
-            raise IOError('read error')
-        res = []
-        for i in range(n):
-            res.append(cbuff[i])
-        if max_length > 16:
-            free(cbuff)
+        try:
+            if max_length <= 16:
+                cbuff = lbuff
+            else:
+                cbuff = <unsigned char *>malloc(max_length)
+            if timeout_ms > 0:
+                with nogil:
+                    n = hid_read_timeout(c_hid, cbuff, c_max_length, c_timeout_ms)
+            else:
+                with nogil:
+                    n = hid_read(c_hid, cbuff, c_max_length)
+            if n is -1:
+                raise IOError('read error')
+            res = []
+            for i in range(n):
+                res.append(cbuff[i])
+        finally:
+            if max_length > 16:
+                free(cbuff)
         return res
 
     def get_manufacturer_string(self):
@@ -192,20 +194,22 @@ cdef class device:
         cdef unsigned char* cbuff
         cdef size_t c_max_length = max_length
         cdef int n
-        if max_length <= 16:
-            cbuff = lbuff
-        else:
-            cbuff = <unsigned char *>malloc(max_length)
-        cbuff[0] = report_num
-        with nogil:
-            n = hid_get_feature_report(c_hid, cbuff, c_max_length)
-        res = []
-        if n < 0:
-            raise IOError('read error')
-        for i in range(n):
-            res.append(cbuff[i])
-        if max_length > 16:
-            free(cbuff)
+        try:
+            if max_length <= 16:
+                cbuff = lbuff
+            else:
+                cbuff = <unsigned char *>malloc(max_length)
+            cbuff[0] = report_num
+            with nogil:
+                n = hid_get_feature_report(c_hid, cbuff, c_max_length)
+            res = []
+            if n < 0:
+                raise IOError('read error')
+            for i in range(n):
+                res.append(cbuff[i])
+        finally:
+            if max_length > 16:
+                free(cbuff)
         return res
 
     def get_input_report(self, int report_num, int max_length):
@@ -216,20 +220,22 @@ cdef class device:
         cdef unsigned char* cbuff
         cdef size_t c_max_length = max_length
         cdef int n
-        if max_length <= 16:
-            cbuff = lbuff
-        else:
-            cbuff = <unsigned char *>malloc(max_length)
-        cbuff[0] = report_num
-        with nogil:
-            n = hid_get_input_report(c_hid, cbuff, c_max_length)
-        res = []
-        if n < 0:
-            raise IOError('read error')
-        for i in range(n):
-            res.append(cbuff[i])
-        if max_length > 16:
-            free(cbuff)
+        try:
+            if max_length <= 16:
+                cbuff = lbuff
+            else:
+                cbuff = <unsigned char *>malloc(max_length)
+            cbuff[0] = report_num
+            with nogil:
+                n = hid_get_input_report(c_hid, cbuff, c_max_length)
+            res = []
+            if n < 0:
+                raise IOError('read error')
+            for i in range(n):
+                res.append(cbuff[i])
+        finally:
+            if max_length > 16:
+                free(cbuff)
         return res
 
     def error(self):
