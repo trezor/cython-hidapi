@@ -1,6 +1,6 @@
 name: Wheel builder
 
-on: [push, pull_request]
+on: workflow_dispatch
 
 jobs:
   build_wheels:
