@@ -20,4 +20,4 @@ hid.*.pyd
 venv/
 
 # Doc output
-doc/_build
+docs/_build
