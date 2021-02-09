@@ -7,6 +7,9 @@ hidraw.c
 .eggs/
 hidapi.egg-info/
 
+# Temp files
+hid.*.pyd
+
 # Testing
 .tox/
 
