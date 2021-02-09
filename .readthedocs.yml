@@ -22,5 +22,9 @@ python:
    version: 3.8
    install:
    - requirements: docs/requirements.txt
-   - method: pip
+   - method: setuptools
      path: .
+
+#
+# Build on ReadTheDocs is not working because libusb and libudev are missing.
+#

@@ -93,8 +93,8 @@ Documentation can be built using Sphinx::
 
    $ cd docs && make html
 
-The HTML output will be in `docs/_build/html`.
+The HTML output will be in ``docs/_build/html``.
 
-The documentation is extracted from the code using `autodoc`.
+The documentation is extracted from the code using ``autodoc``.
 
 Note that the build output is used. So rebuilt the package before generating documentation.
