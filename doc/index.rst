@@ -10,6 +10,8 @@ Welcome to HIDAPI's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   Home <self>
+   examples.md
    api.rst
 
 

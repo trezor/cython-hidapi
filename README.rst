@@ -63,6 +63,10 @@ Build from source
 
     $ sudo python setup.py install
 
+   **Alternatively**, you can run pip directly, which will call the necessary build and install commands::
+
+    $ pip install -e .
+
 5. Test install::
 
     $ python
@@ -81,3 +85,16 @@ to `this one <https://raw.githubusercontent.com/trezor/trezor-common/master/udev
 in your udev rules directory.
 
 Also you might need to call ``udevadm control --reload-rules`` to reload the rules.
+
+Documentation
+-------------
+
+Documentation can be built using Sphinx::
+
+   $ cd doc && make html
+
+The HTML output will be in `doc/_build/html`.
+
+The documentation is extracted from the code using `autodoc`.
+
+Note that the build output is used. So rebuilt the package before generating documentation.

@@ -21,6 +21,28 @@ cdef object U(wchar_t *wcs):
     return PyUnicode_FromWideChar(wcs, n)
 
 def enumerate(int vendor_id=0, int product_id=0):
+    """Return a list of discovered HID devices.
+
+    The fields of dict are:
+
+     - 'path'
+     - 'vendor_id'
+     - 'product_id'
+     - 'serial_number'
+     - 'release_number'
+     - 'manufacturer_string'
+     - 'product_string'
+     - 'usage_page'
+     - 'usage'
+     - 'interface_number'
+
+    :param vendor_id: Vendor id to look for, default = 0
+    :type vendor_id: int, optional
+    :param product_id: Product id to look for, default = 0
+    :type product_id: int, optional
+    :return: List of device dictionaries
+    :rtype: List[Dict]
+    """
     cdef hid_device_info* info
     with nogil:
         info = hid_enumerate(vendor_id, product_id)
@@ -44,9 +66,23 @@ def enumerate(int vendor_id=0, int product_id=0):
     return res
 
 cdef class device:
+    """Device class.
+
+    A device instance can be used to read from and write to a HID device.
+    """
     cdef hid_device *_c_hid
 
     def open(self, int vendor_id=0, int product_id=0, unicode serial_number=None):
+        """Open the connection.
+
+        :param vendor_id: Vendor id to connect to, default = 0
+        :type vendor_id: int, optional
+        :param product_id: Product id to connect to, default = 0
+        :type product_id: int, optional
+        :param serial_number:
+        :type serial_number: unicode, optional
+        :raises IOError:
+        """
         cdef wchar_t * cserial_number = NULL
         cdef int serial_len
         cdef Py_ssize_t result
@@ -68,18 +104,34 @@ cdef class device:
             raise IOError('open failed')
 
     def open_path(self, bytes path):
+        """Open connection by path.
+
+        :param path: Path to device
+        :type path: bytes
+        :raises IOError:
+        """
         cdef char* cbuff = path
         self._c_hid = hid_open_path(cbuff)
         if self._c_hid == NULL:
             raise IOError('open failed')
 
     def close(self):
+        """Close connection.
+
+        This should always be called after opening a connection.
+        """
         if self._c_hid != NULL:
             hid_close(self._c_hid)
             self._c_hid = NULL
 
     def write(self, buff):
-        '''Accept a list of integers (0-255) and send them to the device'''
+        """Accept a list of integers (0-255) and send them to the device.
+
+        :param buff: Data to write (must be convertible to `bytes`)
+        :type buff: Any
+        :return: Write result
+        :rtype: int
+        """
         if self._c_hid == NULL:
             raise ValueError('not open')
         # convert to bytes
@@ -96,13 +148,27 @@ cdef class device:
         return result
 
     def set_nonblocking(self, int v):
-        '''Set the nonblocking flag'''
+        """Set the nonblocking flag.
+
+        :param v: Flag value (1 or 0, True or False)
+        :type v: int, bool
+        :return: Flag result
+        :rtype: int
+        """
         if self._c_hid == NULL:
             raise ValueError('not open')
         return hid_set_nonblocking(self._c_hid, v)
 
     def read(self, int max_length, int timeout_ms=0):
-        '''Return a list of integers (0-255) from the device up to max_length bytes.'''
+        """Return a list of integers (0-255) from the device up to max_length bytes.
+
+        :param max_length: Maximum number of bytes to read
+        :type max_length: int
+        :param timeout_ms: Number of milliseconds until timeout (default: no timeout)
+        :type timeout_ms: int, optional
+        :return: Read bytes
+        :rtype: List[int]
+        """
         if self._c_hid == NULL:
             raise ValueError('not open')
         cdef unsigned char lbuff[16]
@@ -132,6 +198,13 @@ cdef class device:
         return res
 
     def get_manufacturer_string(self):
+        """Return manufacturer string (e.g. vendor name).
+
+        :return:
+        :rtype: str
+        :raises ValueError: If connection is not opened.
+        :raises IOError:
+        """
         if self._c_hid == NULL:
             raise ValueError('not open')
         cdef wchar_t buff[255]
@@ -142,6 +215,13 @@ cdef class device:
 
 
     def get_product_string(self):
+        """Return product string (e.g. device description).
+
+        :return:
+        :rtype: str
+        :raises ValueError: If connection is not opened.
+        :raises IOError:
+        """
         if self._c_hid == NULL:
             raise ValueError('not open')
         cdef wchar_t buff[255]
@@ -151,6 +231,13 @@ cdef class device:
         return U(buff)
 
     def get_serial_number_string(self):
+        """Return serial number.
+
+        :return:
+        :rtype: str
+        :raises ValueError: If connection is not opened.
+        :raises IOError:
+        """
         if self._c_hid == NULL:
             raise ValueError('not open')
         cdef wchar_t buff[255]
@@ -160,6 +247,13 @@ cdef class device:
         return U(buff)
 
     def get_indexed_string(self, index):
+        """Return indexed string.
+
+        :return:
+        :rtype: str
+        :raises ValueError: If connection is not opened.
+        :raises IOError:
+        """
         if self._c_hid == NULL:
             raise ValueError('not open')
         cdef wchar_t buff[255]
@@ -170,9 +264,15 @@ cdef class device:
         return U(buff)
 
     def send_feature_report(self, buff):
+        """Accept a list of integers (0-255) and send them to the device.
+
+        :param buff: Data to send (must be convertible into bytes)
+        :type buff: any
+        :return: Send result
+        :rtype: int
+        """
         if self._c_hid == NULL:
             raise ValueError('not open')
-        '''Accept a list of integers (0-255) and send them to the device'''
         # convert to bytes
         if sys.version_info < (3, 0):
             buff = ''.join(map(chr, buff))
@@ -187,6 +287,17 @@ cdef class device:
         return result
 
     def get_feature_report(self, int report_num, int max_length):
+        """Receive feature report.
+
+        :param report_num:
+        :type report_num: int
+        :param max_length:
+        :type max_length: int
+        :return: Incoming feature report
+        :rtype: List[int]
+        :raises ValueError: If connection is not opened.
+        :raises IOError:
+        """
         if self._c_hid == NULL:
             raise ValueError('not open')
         cdef hid_device * c_hid = self._c_hid
@@ -213,6 +324,17 @@ cdef class device:
         return res
 
     def get_input_report(self, int report_num, int max_length):
+        """Get input report
+
+        :param report_num:
+        :type report_num: int
+        :param max_length:
+        :type max_length: int
+        :return:
+        :rtype: List[int]
+        :raises ValueError: If connection is not opened.
+        :raises IOError:
+        """
         if self._c_hid == NULL:
             raise ValueError('not open')
         cdef hid_device * c_hid = self._c_hid
@@ -239,6 +361,13 @@ cdef class device:
         return res
 
     def error(self):
+        """Get error from device.
+
+        :return:
+        :rtype: str
+        :raises ValueError: If connection is not opened.
+        :raises IOError:
+        """
         if self._c_hid == NULL:
             raise ValueError('not open')
         return U(<wchar_t*>hid_error(self._c_hid))
