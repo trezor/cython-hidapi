@@ -1,3 +1,4 @@
+# Build directories
 build/
 dist/
 MANIFEST
@@ -5,4 +6,15 @@ hid.c
 hidraw.c
 .eggs/
 hidapi.egg-info/
+
+# Testing
 .tox/
+
+# IDE files
+.idea/
+
+# Virtual environments
+venv/
+
+# Doc output
+doc/_build
