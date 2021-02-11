@@ -10,6 +10,6 @@ List devices
 Device class
 ------------
 
-.. autoclass:: hid.device
+.. autoclass:: hid.Device
     :members:
     :undoc-members:
