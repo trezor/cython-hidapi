@@ -65,7 +65,7 @@ def enumerate(int vendor_id=0, int product_id=0):
     hid_free_enumeration(info)
     return res
 
-def on_exit():
+def hidapi_exit():
     """Callback for when the script exits.
 
     This prevents memory leaks in the hidapi C library.
@@ -383,4 +383,4 @@ cdef class device:
 
 
 # Set a callback to close the HID library as the script exits
-atexit.register(on_exit)
+atexit.register(hidapi_exit)
