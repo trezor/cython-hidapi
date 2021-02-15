@@ -114,14 +114,14 @@ cdef class Device:
                     raise MemoryError()
                 result = PyUnicode_AsWideChar(serial_number, cserial_number, serial_len)
                 if result == -1:
-                    raise ValueError("Invalid serial number string")
+                    raise ValueError("invalid serial number string")
                 cserial_number[serial_len] = 0  # Must explicitly null-terminate
             self._c_hid = hid_open(vendor_id, product_id, cserial_number)
         finally:
             if cserial_number != NULL:
                 free(cserial_number)
         if self._c_hid == NULL:
-            raise IOError("Failed to open device")
+            raise IOError("open failed")
 
         return self
 
@@ -135,7 +135,7 @@ cdef class Device:
         cdef char* cbuff = path
         self._c_hid = hid_open_path(cbuff)
         if self._c_hid == NULL:
-            raise IOError("Failed to open device")
+            raise IOError("open failed")
 
         return self
 
@@ -179,7 +179,7 @@ cdef class Device:
         :rtype: int
         """
         if self._c_hid == NULL:
-            raise ValueError("Device is not open")
+            raise ValueError("not open")
         # convert to bytes
         if sys.version_info < (3, 0):
             buff = ''.join(map(chr, buff))
@@ -202,7 +202,7 @@ cdef class Device:
         :rtype: int
         """
         if self._c_hid == NULL:
-            raise ValueError("Device is not open")
+            raise ValueError("not open")
         return hid_set_nonblocking(self._c_hid, v)
 
     def read(self, int max_length, int timeout_ms=0):
@@ -216,7 +216,7 @@ cdef class Device:
         :rtype: List[int]
         """
         if self._c_hid == NULL:
-            raise ValueError("Device is not open")
+            raise ValueError("not open")
         cdef unsigned char lbuff[16]
         cdef unsigned char* cbuff
         cdef size_t c_max_length = max_length
@@ -234,7 +234,7 @@ cdef class Device:
                 with nogil:
                     n = hid_read(c_hid, cbuff, c_max_length)
             if n is -1:
-                raise IOError("Read error")
+                raise IOError("read error")
             res = []
             for i in range(n):
                 res.append(cbuff[i])
@@ -252,11 +252,11 @@ cdef class Device:
         :raises IOError:
         """
         if self._c_hid == NULL:
-            raise ValueError("Device is not open")
+            raise ValueError("not open")
         cdef wchar_t buff[255]
         cdef int r = hid_get_manufacturer_string(self._c_hid, buff, 255)
         if r < 0:
-            raise IOError("Read error while getting manufacturer string")
+            raise IOError("get manufacturer string error")
         return U(buff)
 
 
@@ -269,11 +269,11 @@ cdef class Device:
         :raises IOError:
         """
         if self._c_hid == NULL:
-            raise ValueError("Device is not open")
+            raise ValueError("not open")
         cdef wchar_t buff[255]
         cdef int r = hid_get_product_string(self._c_hid, buff, 255)
         if r < 0:
-            raise IOError("Read error while getting product string")
+            raise IOError("get product string error")
         return U(buff)
 
     def get_serial_number_string(self):
@@ -285,11 +285,11 @@ cdef class Device:
         :raises IOError:
         """
         if self._c_hid == NULL:
-            raise ValueError("Device is not open")
+            raise ValueError("not open")
         cdef wchar_t buff[255]
         cdef int r = hid_get_serial_number_string(self._c_hid, buff, 255)
         if r < 0:
-            raise IOError("Read error while getting serial number string")
+            raise IOError("get serial number string error")
         return U(buff)
 
     def get_indexed_string(self, index):
@@ -301,12 +301,12 @@ cdef class Device:
         :raises IOError:
         """
         if self._c_hid == NULL:
-            raise ValueError("Device is not open")
+            raise ValueError("not open")
         cdef wchar_t buff[255]
         cdef unsigned char c_index = index
         cdef int r = hid_get_indexed_string(self._c_hid, c_index, buff, 255)
         if r < 0:
-            raise IOError("Read error while getting indexed string")
+            raise IOError("get indexed string error")
         return U(buff)
 
     def send_feature_report(self, buff):
@@ -318,7 +318,7 @@ cdef class Device:
         :rtype: int
         """
         if self._c_hid == NULL:
-            raise ValueError("Device is not open")
+            raise ValueError("not open")
         # convert to bytes
         if sys.version_info < (3, 0):
             buff = ''.join(map(chr, buff))
@@ -345,7 +345,7 @@ cdef class Device:
         :raises IOError:
         """
         if self._c_hid == NULL:
-            raise ValueError("Device is not open")
+            raise ValueError("not open")
         cdef hid_device * c_hid = self._c_hid
         cdef unsigned char lbuff[16]
         cdef unsigned char* cbuff
@@ -361,7 +361,7 @@ cdef class Device:
                 n = hid_get_feature_report(c_hid, cbuff, c_max_length)
             res = []
             if n < 0:
-                raise IOError("Read error")
+                raise IOError("read error")
             for i in range(n):
                 res.append(cbuff[i])
         finally:
@@ -382,7 +382,7 @@ cdef class Device:
         :raises IOError:
         """
         if self._c_hid == NULL:
-            raise ValueError("Device is not open")
+            raise ValueError("not open")
         cdef hid_device * c_hid = self._c_hid
         cdef unsigned char lbuff[16]
         cdef unsigned char* cbuff
@@ -398,7 +398,7 @@ cdef class Device:
                 n = hid_get_input_report(c_hid, cbuff, c_max_length)
             res = []
             if n < 0:
-                raise IOError("Read error")
+                raise IOError("read error")
             for i in range(n):
                 res.append(cbuff[i])
         finally:
@@ -415,12 +415,9 @@ cdef class Device:
         :raises IOError:
         """
         if self._c_hid == NULL:
-            raise ValueError("Device is not open")
+            raise ValueError("not open")
         return U(<wchar_t*>hid_error(self._c_hid))
 
 
-cdef class device(Device):
-    """Old alias for the `Device` class, use the new version instead!"""
-
-    def __cinit__(self):
-        warnings.warn("Use the `Device` class instead", DeprecationWarning)
+"""Old alias for the `Device` class, use the new name instead!"""
+device = Device
