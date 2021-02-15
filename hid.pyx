@@ -1,7 +1,7 @@
 import sys
+import atexit
 from chid cimport *
 from libc.stddef cimport wchar_t, size_t
-from cpython.unicode cimport PyUnicode_FromUnicode
 
 cdef extern from "ctype.h":
     int wcslen(wchar_t*)
@@ -64,6 +64,15 @@ def enumerate(int vendor_id=0, int product_id=0):
         c = c.next
     hid_free_enumeration(info)
     return res
+
+def hidapi_exit():
+    """Callback for when the script exits.
+
+    This prevents memory leaks in the hidapi C library.
+    Note that the counterpart, hid_init(), is not called explicitly. It will
+    be called internally when first needed.
+    """
+    hid_exit()
 
 cdef class device:
     """Device class.
@@ -371,3 +380,7 @@ cdef class device:
         if self._c_hid == NULL:
             raise ValueError('not open')
         return U(<wchar_t*>hid_error(self._c_hid))
+
+
+# Set a callback to close the HID library as the script exits
+atexit.register(hidapi_exit)
