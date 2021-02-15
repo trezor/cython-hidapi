@@ -160,7 +160,7 @@ cdef class Device:
         :func:`~hid.open_path` for usages.
         """
         if self._c_hid == NULL:
-            raise IOError('Device not open, make sure to call it like: '
+            raise ValueError('note open - make sure to call it like: '
                           '`with device.open(): ...`')
 
     def __exit__(self, exc_type, exc_val, exc_tb):
