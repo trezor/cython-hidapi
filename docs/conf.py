@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.abspath('../'))  # Add root directory to path
 # -- Project information -----------------------------------------------------
 
 project = 'HIDAPI'
-copyright = '2021, Trezor'
-author = 'Trezor'
+copyright = '2011-2021, SatoshiLabs & contributors'
+author = 'SatoshiLabs'
 
 
 # -- General configuration ---------------------------------------------------
