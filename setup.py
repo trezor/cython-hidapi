@@ -101,7 +101,7 @@ if "bsd" in sys.platform:
 
 setup(
     name="hidapi",
-    version="0.10.1",
+    version="0.11.0",
     description="A Cython interface to the hidapi from https://github.com/libusb/hidapi",
     long_description=open("README.rst", "rt").read(),
     author="Pavol Rusnak",
