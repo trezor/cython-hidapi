@@ -6,3 +6,6 @@ include hidapi/windows/hid.c
 include LICENSE*.txt
 include tests.py
 include try.py
+include chid.pxd
+include hid.pyx
+include hidraw.pyx
