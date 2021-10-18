@@ -1,8 +1,12 @@
-include hidapi/hidapi/hidapi.h
-include hidapi/libusb/hid.c
-include hidapi/linux/hid.c
-include hidapi/mac/hid.c
-include hidapi/windows/hid.c
+include hidapi/hidapi/*.h
+include hidapi/libusb/*.c
+include hidapi/libusb/*.h
+include hidapi/linux/*.c
+include hidapi/linux/*.h
+include hidapi/mac/*.c
+include hidapi/mac/*.h
+include hidapi/windows/*.c
+include hidapi/windows/*.h
 include LICENSE*.txt
 include tests.py
 include try.py
