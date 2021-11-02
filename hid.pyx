@@ -66,14 +66,6 @@ def enumerate(int vendor_id=0, int product_id=0):
     hid_free_enumeration(info)
     return res
 
-def hidapi_exit():
-    """No-op.
-
-    Turned into a no-op to prevent memory safety bugs (see issue #128).
-
-    HIDAPI will be finalized automatically, when appropriate.
-    """
-
 cdef class device:
     """Device class.
 
