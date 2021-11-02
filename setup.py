@@ -27,6 +27,7 @@ if sys.platform.startswith("linux"):
         hidraw_module = "hidraw"
         libs = ["usb-1.0", "udev", "rt"]
         src2 = src.copy()
+        src = ["hidraw.pyx", "chid.pxd"]
         if system_hidapi == 1:
             libs.append("hidapi-libusb")
         else:
