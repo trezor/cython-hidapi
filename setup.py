@@ -24,24 +24,28 @@ if sys.platform.startswith("linux"):
     modules = []
     if "--with-libusb" in sys.argv:
         sys.argv.remove("--with-libusb")
-        hidraw_module = "hidraw"
         libs = ["usb-1.0", "udev", "rt"]
-        src2 = src.copy()
-        src = ["hidraw.pyx", "chid.pxd"]
         if system_hidapi == 1:
             libs.append("hidapi-libusb")
         else:
-            src2.append(hidapi_src("libusb"))
+            src.append(hidapi_src("libusb"))
         modules.append(
             Extension(
                 "hid",
-                sources=src2,
+                sources=src,
                 include_dirs=[hidapi_include, "/usr/include/libusb-1.0"],
                 libraries=libs,
             )
         )
+        # set up a second module for hidraw (a different .pyx file is needed
+        # for proper generation of Pyinit_hidraw by Cython)
+        hidraw_module = "hidraw"
+        src = ["hidraw.pyx", "chid.pxd"]
     else:
         hidraw_module = "hid"
+        if "--without-libusb" in sys.argv:
+            # already the default behavior, but accept the option
+            sys.argv.remove("--without-libusb")
     libs = ["udev", "rt"]
     if system_hidapi == 1:
         libs.append("hidapi-hidraw")
