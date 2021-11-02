@@ -22,30 +22,32 @@ if "--with-system-hidapi" in sys.argv:
 
 if sys.platform.startswith("linux"):
     modules = []
-    if "--without-libusb" in sys.argv:
-        sys.argv.remove("--without-libusb")
-        hidraw_module = "hid"
-    else:
+    if "--with-libusb" in sys.argv:
+        sys.argv.remove("--with-libusb")
         hidraw_module = "hidraw"
         libs = ["usb-1.0", "udev", "rt"]
+        src2 = src.copy()
         if system_hidapi == 1:
             libs.append("hidapi-libusb")
         else:
-            src.append(hidapi_src("libusb"))
+            src2.append(hidapi_src("libusb"))
+        print(src2)
         modules.append(
             Extension(
                 "hid",
-                sources=src,
+                sources=src2,
                 include_dirs=[hidapi_include, "/usr/include/libusb-1.0"],
                 libraries=libs,
             )
         )
+    else:
+        hidraw_module = "hid"
     libs = ["udev", "rt"]
-    src = ["hidraw.pyx", "chid.pxd"]
     if system_hidapi == 1:
         libs.append("hidapi-hidraw")
     else:
         src.append(hidapi_src("linux"))
+    print(src)
     modules.append(
         Extension(
             hidraw_module, sources=src, include_dirs=[hidapi_include], libraries=libs,
