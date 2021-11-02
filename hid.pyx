@@ -80,7 +80,18 @@ cdef class device:
 
     A device instance can be used to read from and write to a HID device.
     """
+
     cdef hid_device *_c_hid
+    cdef object __weakref__ # enable weak-reference support
+
+    def __cinit__(self):
+        """Initialize the device instance.
+
+        Sets up `self.close()` to be automatically called once the strong count
+        goes to zero.  This is necessary to prevent issues later in the
+        execution, when finalizing the HIDAPI library itself.
+        """
+        weakref.finalize(self, self.close)
 
     def open(self, int vendor_id=0, int product_id=0, unicode serial_number=None):
         """Open the connection.
