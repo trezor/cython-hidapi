@@ -31,7 +31,6 @@ if sys.platform.startswith("linux"):
             libs.append("hidapi-libusb")
         else:
             src2.append(hidapi_src("libusb"))
-        print(src2)
         modules.append(
             Extension(
                 "hid",
@@ -47,7 +46,6 @@ if sys.platform.startswith("linux"):
         libs.append("hidapi-hidraw")
     else:
         src.append(hidapi_src("linux"))
-    print(src)
     modules.append(
         Extension(
             hidraw_module, sources=src, include_dirs=[hidapi_include], libraries=libs,
