@@ -67,13 +67,12 @@ def enumerate(int vendor_id=0, int product_id=0):
     return res
 
 def hidapi_exit():
-    """Callback for when the script exits.
+    """No-op.
 
-    This prevents memory leaks in the hidapi C library.
-    Note that the counterpart, hid_init(), is not called explicitly. It will
-    be called internally when first needed.
+    Turned into a no-op to prevent memory safety bugs (see issue #128).
+
+    HIDAPI will be finalized automatically, when appropriate.
     """
-    hid_exit()
 
 cdef class device:
     """Device class.
@@ -396,4 +395,4 @@ cdef class device:
 
 # Finalize the HIDAPI library *only* once there are no more references to this
 # module, and it is being garbage collected.
-weakref.finalize(sys.modules[__name__], hidapi_exit)
+weakref.finalize(sys.modules[__name__], hid_exit)
