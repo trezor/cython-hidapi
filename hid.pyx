@@ -1,5 +1,6 @@
 import sys
-import atexit
+import weakref
+
 from chid cimport *
 from libc.stddef cimport wchar_t, size_t
 
@@ -382,5 +383,6 @@ cdef class device:
         return U(<wchar_t*>hid_error(self._c_hid))
 
 
-# Set a callback to close the HID library as the script exits
-atexit.register(hidapi_exit)
+# Finalize the HIDAPI library *only* once there are no more references to this
+# module, and it is being garbage collected.
+weakref.finalize(sys.modules[__name__], hidapi_exit)
