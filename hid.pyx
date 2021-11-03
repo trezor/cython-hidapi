@@ -98,6 +98,8 @@ cdef class device:
         cdef wchar_t * cserial_number = NULL
         cdef int serial_len
         cdef Py_ssize_t result
+        if self._c_hid != NULL:
+            raise RuntimeError('already open')
         try:
             if serial_number is not None:
                 serial_len = len(serial_number)
@@ -123,6 +125,8 @@ cdef class device:
         :raises IOError:
         """
         cdef char* cbuff = path
+        if self._c_hid != NULL:
+            raise RuntimeError('already open')
         self._c_hid = hid_open_path(cbuff)
         if self._c_hid == NULL:
             raise IOError('open failed')
