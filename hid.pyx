@@ -66,6 +66,23 @@ def enumerate(int vendor_id=0, int product_id=0):
     hid_free_enumeration(info)
     return res
 
+cdef class _closer:
+    """Wrap a hid_device *ptr and a provide a way to call hid_close() on it.
+
+    Used internally for weakref.finalize, which only accepts Python objects.
+    """
+
+    cdef hid_device *_ptr
+
+    @staticmethod
+    cdef wrap(hid_device *ptr):
+        cdef _closer closer = _closer()
+        closer._ptr = ptr
+        return closer
+
+    def close(self):
+        hid_close(self._ptr)
+
 cdef class device:
     """Device class.
 
@@ -73,16 +90,8 @@ cdef class device:
     """
 
     cdef hid_device *_c_hid
-    cdef object __weakref__ # enable weak-reference support
-
-    def __cinit__(self):
-        """Initialize the device instance.
-
-        Sets up `self.close()` to be automatically called once the strong count
-        goes to zero.  This is necessary to prevent issues later in the
-        execution, when finalizing the HIDAPI library itself.
-        """
-        weakref.finalize(self, self.close)
+    cdef object __weakref__  # enable weak-reference support
+    cdef object _close
 
     def open(self, int vendor_id=0, int product_id=0, unicode serial_number=None):
         """Open the connection.
@@ -116,6 +125,7 @@ cdef class device:
                 free(cserial_number)
         if self._c_hid == NULL:
             raise IOError('open failed')
+        self._close = weakref.finalize(self, _closer.wrap(self._c_hid).close)
 
     def open_path(self, bytes path):
         """Open connection by path.
@@ -130,6 +140,7 @@ cdef class device:
         self._c_hid = hid_open_path(cbuff)
         if self._c_hid == NULL:
             raise IOError('open failed')
+        self._close = weakref.finalize(self, _closer.wrap(self._c_hid).close)
 
     def close(self):
         """Close connection.
@@ -137,7 +148,8 @@ cdef class device:
         This should always be called after opening a connection.
         """
         if self._c_hid != NULL:
-            hid_close(self._c_hid)
+            self._close()
+            self._close.detach()
             self._c_hid = NULL
 
     def write(self, buff):
