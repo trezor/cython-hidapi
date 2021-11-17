@@ -21,41 +21,27 @@ if "--with-system-hidapi" in sys.argv:
     hidapi_include = "/usr/include/hidapi"
 
 if sys.platform.startswith("linux"):
-    modules = []
     if "--with-libusb" in sys.argv:
         sys.argv.remove("--with-libusb")
+        include_dirs = [hidapi_include, "/usr/include/libusb-1.0"]
         libs = ["usb-1.0", "udev", "rt"]
         if system_hidapi == 1:
             libs.append("hidapi-libusb")
         else:
             src.append(hidapi_src("libusb"))
-        modules.append(
-            Extension(
-                "hid",
-                sources=src,
-                include_dirs=[hidapi_include, "/usr/include/libusb-1.0"],
-                libraries=libs,
-            )
-        )
-        # set up a second module for hidraw (a different .pyx file is needed
-        # for proper generation of Pyinit_hidraw by Cython)
-        hidraw_module = "hidraw"
-        src = ["hidraw.pyx", "chid.pxd"]
     else:
-        hidraw_module = "hid"
+        # already the default behavior, but accept the old option
         if "--without-libusb" in sys.argv:
-            # already the default behavior, but accept the option
             sys.argv.remove("--without-libusb")
-    libs = ["udev", "rt"]
-    if system_hidapi == 1:
-        libs.append("hidapi-hidraw")
-    else:
-        src.append(hidapi_src("linux"))
-    modules.append(
-        Extension(
-            hidraw_module, sources=src, include_dirs=[hidapi_include], libraries=libs,
-        )
-    )
+        include_dirs = [hidapi_include]
+        libs = ["udev", "rt"]
+        if system_hidapi == 1:
+            libs.append("hidapi-hidraw")
+        else:
+            src.append(hidapi_src("linux"))
+    modules = [
+        Extension("hid", sources=src, include_dirs=include_dirs, libraries=libs,)
+    ]
 
 if sys.platform.startswith("darwin"):
     macos_sdk_path = (
