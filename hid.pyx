@@ -66,6 +66,14 @@ def enumerate(int vendor_id=0, int product_id=0):
     hid_free_enumeration(info)
     return res
 
+def version_str():
+    """Return a runtime version string of the hidapi C library.
+
+    :return: version string of library
+    :rtype: str
+    """
+    return (<bytes>hid_version_str()).decode('ascii')
+
 cdef class _closer:
     """Wrap a hid_device *ptr and a provide a way to call hid_close() on it.
 
