@@ -4,6 +4,10 @@ import weakref
 from chid cimport *
 from libc.stddef cimport wchar_t, size_t
 
+
+__version__ = "0.12.0.post2"
+
+
 cdef extern from "ctype.h":
     int wcslen(wchar_t*)
 

@@ -3,6 +3,7 @@ from setuptools import setup, Extension
 import os
 import sys
 import subprocess
+import re
 
 hidapi_topdir = os.path.join("hidapi")
 hidapi_include = os.path.join(hidapi_topdir, "hidapi")
@@ -99,9 +100,21 @@ if "bsd" in sys.platform:
         Extension("hid", sources=src, include_dirs=include_dirs_bsd, libraries=libs,)
     ]
 
+
+def find_version():
+    tld = os.path.abspath(os.path.dirname(__file__))
+    filename = os.path.join(tld, 'hid.pyx')
+    with open(filename) as f:
+        text = f.read()
+    match = re.search(r"^__version__ = \"(.*)\"$", text, re.MULTILINE)
+    if not match:
+        raise RuntimeError('cannot find version')
+    return match.group(1)
+
+
 setup(
     name="hidapi",
-    version="0.12.0.post2",
+    version=find_version(),
     description="A Cython interface to the hidapi from https://github.com/libusb/hidapi",
     long_description=open("README.rst", "rt").read(),
     author="Pavol Rusnak",
