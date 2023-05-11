@@ -8,6 +8,9 @@ from libc.stddef cimport wchar_t, size_t
 __version__ = "0.13.1"
 
 
+hid_init()
+
+
 cdef extern from "ctype.h":
     int wcslen(wchar_t*)
 
