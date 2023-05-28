@@ -5,7 +5,7 @@ from chid cimport *
 from libc.stddef cimport wchar_t, size_t
 
 
-__version__ = "0.13.1"
+__version__ = "0.14.0"
 
 
 hid_init()
