@@ -13,11 +13,9 @@ for d in hid.enumerate():
     print()
 
 # try opening a device, then perform write and read
-
+h = hid.device()
 try:
     print("Opening the device")
-
-    h = hid.device()
     h.open(0x534C, 0x0001)  # TREZOR VendorID/ProductID
 
     print("Manufacturer: %s" % h.get_manufacturer_string())
@@ -48,6 +46,9 @@ try:
 
 except IOError as ex:
     print(ex)
+    print("hid error:")
+    print(h.error())
+    print("")
     print("You probably don't have the hard-coded device.")
     print("Update the h.open() line in this script with the one")
     print("from the enumeration list output above and try again.")
