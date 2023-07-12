@@ -404,15 +404,12 @@ cdef class device:
         return res
 
     def error(self):
-        """Get error from device.
+        """Get error from device, or global error if no device is opened.
 
         :return:
         :rtype: str
-        :raises ValueError: If connection is not opened.
         :raises IOError:
         """
-        if self._c_hid == NULL:
-            raise ValueError('not open')
         return U(<wchar_t*>hid_error(self._c_hid))
 
 
