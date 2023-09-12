@@ -137,6 +137,5 @@ setup(
         "Programming Language :: Python :: 3.9",
     ],
     ext_modules=cythonize(modules, language_level=3),
-    setup_requires=["Cython<3"],
     install_requires=["setuptools>=19.0"],
 )
