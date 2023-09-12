@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from setuptools import setup, Extension
+from Cython.Build import cythonize
 import os
 import sys
 import subprocess
@@ -135,7 +136,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
-    ext_modules=modules,
+    ext_modules=cythonize(modules, language_level=3),
     setup_requires=["Cython<3"],
     install_requires=["setuptools>=19.0"],
 )
