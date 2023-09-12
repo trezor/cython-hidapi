@@ -44,14 +44,10 @@ Build from source
 
 1. Download cython-hidapi archive::
 
-    $ git clone https://github.com/trezor/cython-hidapi.git
+    $ git clone --recursive https://github.com/trezor/cython-hidapi.git
     $ cd cython-hidapi
 
-2. Initialize hidapi submodule::
-
-    $ git submodule update --init
-
-3. Build cython-hidapi extension module::
+2. Build cython-hidapi extension module::
 
     $ python setup.py build
 
@@ -59,7 +55,7 @@ Build from source
 
     $ python setup.py build --without-libusb
 
-4. Install cython-hidapi module into your Python distribution::
+3. Install cython-hidapi module into your Python distribution::
 
     $ sudo python setup.py install
 
@@ -67,13 +63,13 @@ Build from source
 
     $ pip install -e .
 
-5. Test install::
+4. Test install::
 
     $ python
     >>> import hid
     >>>
 
-6. Try example script::
+5. Try example script::
 
     $ python try.py
 
