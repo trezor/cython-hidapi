@@ -4,6 +4,13 @@ cdef extern from "hidapi.h":
     ctypedef struct hid_device:
         pass
 
+    cdef enum hid_bus_type:
+        HID_API_BUS_UNKNOWN = 0x00,
+        HID_API_BUS_USB = 0x01,
+        HID_API_BUS_BLUETOOTH = 0x02,
+        HID_API_BUS_I2C = 0x03,
+        HID_API_BUS_SPI = 0x04
+
     cdef struct hid_device_info:
         char *path
         unsigned short vendor_id
@@ -16,6 +23,7 @@ cdef extern from "hidapi.h":
         unsigned short usage
         int interface_number
         hid_device_info *next
+        hid_bus_type bus_type
 
     hid_device_info* hid_enumerate(unsigned short, unsigned short) nogil
     void hid_free_enumeration(hid_device_info*)

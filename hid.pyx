@@ -68,6 +68,7 @@ def enumerate(int vendor_id=0, int product_id=0):
             'usage_page': c.usage_page,
             'usage': c.usage,
             'interface_number': c.interface_number,
+            'bus_type': c.bus_type,
         })
         c = c.next
     hid_free_enumeration(info)
