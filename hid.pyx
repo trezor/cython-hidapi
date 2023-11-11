@@ -11,10 +11,10 @@ __version__ = "0.14.0"
 hid_init()
 
 
-cdef extern from "ctype.h":
+cdef extern from "<ctype.h>":
     int wcslen(wchar_t*)
 
-cdef extern from "stdlib.h":
+cdef extern from "<stdlib.h>":
     void free(void* ptr)
     void* malloc(size_t size)
 

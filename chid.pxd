@@ -1,10 +1,10 @@
 from libc.stddef cimport wchar_t, size_t
 
-cdef extern from "hidapi.h":
+cdef extern from "<hidapi.h>":
     ctypedef struct hid_device:
         pass
 
-    cdef enum hid_bus_type:
+    ctypedef enum hid_bus_type:
         HID_API_BUS_UNKNOWN = 0x00,
         HID_API_BUS_USB = 0x01,
         HID_API_BUS_BLUETOOTH = 0x02,
