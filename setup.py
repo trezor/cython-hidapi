@@ -1,109 +1,126 @@
 #!/usr/bin/python
-from setuptools import setup, Extension
 from Cython.Build import cythonize
+from setuptools import setup, Extension
 import os
-import sys
-import subprocess
+import pkgconfig
 import re
+import subprocess
+import sys
 
-hidapi_topdir = os.path.join("hidapi")
-hidapi_include = os.path.join(hidapi_topdir, "hidapi")
-system_hidapi = 0
-libs = []
-src = ["hid.pyx"]
+tld = os.path.abspath(os.path.dirname(__file__))
+embedded_hidapi_topdir = os.path.join(tld, "hidapi")
+embedded_hidapi_include = os.path.join(embedded_hidapi_topdir, "hidapi")
 
 
 def hidapi_src(platform):
-    return os.path.join(hidapi_topdir, platform, "hid.c")
+    return os.path.join(embedded_hidapi_topdir, platform, "hid.c")
 
 
-if "--with-system-hidapi" in sys.argv:
-    sys.argv.remove("--with-system-hidapi")
-    system_hidapi = 1
-    hidapi_include = "/usr/include/hidapi"
-
-if sys.platform.startswith("linux"):
-    modules = []
-    if "--without-libusb" in sys.argv:
-        sys.argv.remove("--without-libusb")
-        hidraw_module = "hid"
-    else:
-        hidraw_module = "hidraw"
-        libs = ["usb-1.0", "udev", "rt"]
-        if system_hidapi == 1:
-            libs.append("hidapi-libusb")
-        else:
-            src.append(hidapi_src("libusb"))
-        modules.append(
+def hid_from_embedded_hidapi():
+    # TODO: what about MinGW/msys?
+    if sys.platform.startswith("win") or sys.platform.startswith("cygwin"):
+        modules = [
             Extension(
                 "hid",
-                sources=src,
-                include_dirs=[hidapi_include, "/usr/include/libusb-1.0"],
-                libraries=libs,
+                sources=["hid.pyx", hidapi_src("windows")],
+                include_dirs=[embedded_hidapi_include],
+                libraries=["setupapi"],
+            )
+        ]
+
+    elif sys.platform.startswith("darwin"):
+        macos_sdk_path = (
+            subprocess.check_output(["xcrun", "--show-sdk-path"]).decode().strip()
+        )
+        os.environ["CFLAGS"] = (
+            '-isysroot "%s" -framework IOKit -framework CoreFoundation -framework AppKit'
+            % macos_sdk_path
+        )
+        os.environ["LDFLAGS"] = ""
+        modules = [
+            Extension(
+                "hid",
+                sources=["hid.pyx", hidapi_src("mac")],
+                include_dirs=[embedded_hidapi_include]
+            )
+        ]
+
+    elif sys.platform.startswith("linux"):
+        modules = []
+        if "--without-libusb" in sys.argv:
+            sys.argv.remove("--without-libusb")
+            hidraw_module = "hid"
+        else:
+            hidraw_module = "hidraw"
+            modules.append(
+                Extension(
+                    "hid",
+                    sources=["hid.pyx", hidapi_src("libusb")],
+                    include_dirs=[embedded_hidapi_include],
+                    extra_compile_args=[pkgconfig.cflags('libusb-1.0 >= 1.0.9')],
+                    extra_link_args=[pkgconfig.libs('libusb-1.0 >= 1.0.9')]
+                )
+            )
+        modules.append(
+            Extension(
+                hidraw_module,
+                sources=["hidraw.pyx", hidapi_src("linux")],
+                include_dirs=[embedded_hidapi_include],
+                libraries=["udev"],
             )
         )
-    libs = ["udev", "rt"]
-    src = ["hidraw.pyx"]
-    if system_hidapi == 1:
-        libs.append("hidapi-hidraw")
-    else:
-        src.append(hidapi_src("linux"))
-    modules.append(
-        Extension(
-            hidraw_module, sources=src, include_dirs=[hidapi_include], libraries=libs,
-        )
-    )
 
-if sys.platform.startswith("darwin"):
-    macos_sdk_path = (
-        subprocess.check_output(["xcrun", "--show-sdk-path"]).decode().strip()
-    )
-    os.environ["CFLAGS"] = (
-        '-isysroot "%s" -framework IOKit -framework CoreFoundation -framework AppKit'
-        % macos_sdk_path
-    )
-    os.environ["LDFLAGS"] = ""
-    if system_hidapi == True:
-        libs.append("hidapi")
     else:
-        src.append(hidapi_src("mac"))
-    modules = [
-        Extension("hid", sources=src, include_dirs=[hidapi_include], libraries=libs,)
-    ]
-
-if sys.platform.startswith("win") or sys.platform.startswith("cygwin"):
-    libs = ["setupapi"]
-    if system_hidapi == True:
-        libs.append("hidapi")
-    else:
-        src.append(hidapi_src("windows"))
-    modules = [
-        Extension("hid", sources=src, include_dirs=[hidapi_include], libraries=libs,)
-    ]
-
-if "bsd" in sys.platform:
-    if "freebsd" in sys.platform:
-        libs = ["usb", "hidapi"]
-        include_dirs_bsd = ["/usr/local/include/hidapi"]
-    else:
-        libs = ["usb-1.0"]
-        include_dirs_bsd = [
-            hidapi_include,
-            "/usr/include/libusb-1.0",
-            "/usr/local/include/libusb-1.0",
-            "/usr/local/include/",
+        modules = [
+            Extension(
+                "hid",
+                sources=["hid.pyx", hidapi_src("libusb")],
+                include_dirs=[embedded_hidapi_include],
+                extra_compile_args=[pkgconfig.cflags('libusb-1.0 >= 1.0.9')],
+                extra_link_args=[pkgconfig.libs('libusb-1.0 >= 1.0.9')]
+            )
         ]
-        if system_hidapi == True:
-            libs.append("hidapi-libusb")
+
+    return modules
+
+
+def hid_from_system_hidapi():
+    if sys.platform.startswith("linux"):
+        modules = []
+        if "--without-libusb" in sys.argv:
+            sys.argv.remove("--without-libusb")
+            hidraw_module = "hid"
         else:
-            src.append(hidapi_src("libusb"))
-    modules = [
-        Extension("hid", sources=src, include_dirs=include_dirs_bsd, libraries=libs,)
-    ]
+            hidraw_module = "hidraw"
+            modules.append(
+                Extension(
+                    "hid",
+                    sources=["hid.pyx"],
+                    extra_compile_args=[pkgconfig.cflags('hidapi-libusb >= 0.14')],
+                    extra_link_args=[pkgconfig.libs('hidapi-libusb >= 0.14')]
+                )
+            )
+        modules.append(
+            Extension(
+                hidraw_module,
+                sources=["hidraw.pyx"],
+                extra_compile_args=[pkgconfig.cflags('hidapi-hidraw >= 0.14')],
+                extra_link_args=[pkgconfig.libs('hidapi-hidraw >= 0.14')]
+            )
+        )
+    else:
+        modules = [
+            Extension(
+                hidraw_module,
+                sources=["hidraw.pyx"],
+                extra_compile_args=[pkgconfig.cflags('hidapi >= 0.14')],
+                extra_link_args=[pkgconfig.libs('hidapi >= 0.14')]
+            )
+        ]
+    return modules
 
 
 def find_version():
-    tld = os.path.abspath(os.path.dirname(__file__))
     filename = os.path.join(tld, 'hid.pyx')
     with open(filename) as f:
         text = f.read()
@@ -111,6 +128,13 @@ def find_version():
     if not match:
         raise RuntimeError('cannot find version')
     return match.group(1)
+
+
+if "--with-system-hidapi" in sys.argv:
+    sys.argv.remove("--with-system-hidapi")
+    modules = hid_from_system_hidapi()
+else:
+    modules = hid_from_embedded_hidapi()
 
 
 setup(
