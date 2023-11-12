@@ -57,7 +57,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install setuptools tox tox-gh-actions --upgrade
+        python -m pip install setuptools tox tox-gh-actions
         pip install -r requirements.txt --upgrade
 
     - name: Test with tox
