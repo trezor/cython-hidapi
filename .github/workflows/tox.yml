@@ -37,6 +37,7 @@ jobs:
 
     - name: Install Ubuntu HIDAPI
       if:  ${{ (matrix.platform == 'ubuntu-latest') && (matrix.system-hidapi == '--with-system-hidapi') }}
+      # the default apt version of libhidapi-dev is too old, need to build the one we know would work
       run: |
         sudo apt install cmake
         mkdir hidapi_build && cd hidapi_build
