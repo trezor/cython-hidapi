@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.8", "3.10", "3.12"]
+        python-version: ["3.8", "3.12"]
         system-hidapi: ["", "--with-system-hidapi"]
         exclude:
           # TODO: it is non-trivial to install pkg-config and HIDAPI,
