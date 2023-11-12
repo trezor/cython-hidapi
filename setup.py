@@ -42,7 +42,7 @@ def pkgconfig_configure_extension(ext, package):
     pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
 
     def exists(package):
-        cmd = "{0} --exists '{1}'".format(pkg_config_exe, package)
+        cmd = f"{pkg_config_exe} --exists '{package}'"
         return call(shlex.split(cmd)) == 0
 
     if not exists(package):
