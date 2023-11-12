@@ -72,6 +72,13 @@ def hidapi_src(platform):
     return os.path.join(embedded_hidapi_topdir, platform, "hid.c")
 
 
+def check_deprecated_without_libusb():
+    # already the default behavior, but accept the old option
+    if "--without-libusb" in sys.argv:
+        sys.argv.remove("--without-libusb")
+        print("Withou libusb is already a default, '--without-libusb' option is redundant and deprecated")
+
+
 def hid_from_embedded_hidapi():
     # TODO: what about MinGW/msys?
     if sys.platform.startswith("win") or sys.platform.startswith("cygwin"):
@@ -94,7 +101,7 @@ def hid_from_embedded_hidapi():
                 "hid",
                 sources=["hid.pyx", hidapi_src("mac")],
                 include_dirs=[embedded_hidapi_include],
-                # TODO: -Wno-unreachable-code: https://github.com/cython/cython/issues/3172
+                # TODO: remove -Wno-unreachable-code when the time comes: https://github.com/cython/cython/issues/3172
                 extra_compile_args=['-isysroot', macos_sdk_path, '-Wno-unreachable-code'],
                 # TODO: remove '-framework AppKit' after switching to 0.14.1 or newer
                 extra_link_args=['-framework', 'IOKit', '-framework', 'CoreFoundation', '-framework', 'AppKit']
@@ -103,10 +110,9 @@ def hid_from_embedded_hidapi():
 
     elif sys.platform.startswith("linux"):
         modules = []
-        if "--without-libusb" in sys.argv:
-            sys.argv.remove("--without-libusb")
-            hidraw_module = "hid"
-        else:
+        if "--with-libusb" in sys.argv:
+            sys.argv.remove("--with-libusb")
+
             hidraw_module = "hidraw"
             modules.append(
                 pkgconfig_configure_extension(
@@ -118,6 +124,10 @@ def hid_from_embedded_hidapi():
                     libusb_pkgconfig
                 )
             )
+        else:
+            hidraw_module = "hid"
+            check_deprecated_without_libusb()
+
         modules.append(
             Extension(
                 hidraw_module,
@@ -145,10 +155,9 @@ def hid_from_embedded_hidapi():
 def hid_from_system_hidapi():
     if sys.platform.startswith("linux"):
         modules = []
-        if "--without-libusb" in sys.argv:
-            sys.argv.remove("--without-libusb")
-            hidraw_module = "hid"
-        else:
+        if "--with-libusb" in sys.argv:
+            sys.argv.remove("--with-libusb")
+
             hidraw_module = "hidraw"
             modules.append(
                 pkgconfig_configure_extension(
@@ -156,6 +165,10 @@ def hid_from_system_hidapi():
                     hidapi_libusb_pkgconfig
                 )
             )
+        else:
+            hidraw_module = "hid"
+            check_deprecated_without_libusb()
+
         modules.append(
             pkgconfig_configure_extension(
                 Extension(hidraw_module, sources=["hidraw.pyx"]),
