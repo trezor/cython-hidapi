@@ -57,6 +57,11 @@ Build from source
 
     $ python setup.py build --with-libusb
 
+   Or you can also use the environment variable::
+
+    $ export HIDAPI_WITH_LIBUSB=1
+    $ python setup.py build
+
 3. Install cython-hidapi module into your Python distribution::
 
     $ sudo python setup.py install
