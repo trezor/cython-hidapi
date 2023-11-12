@@ -110,7 +110,7 @@ def hid_from_system_hidapi():
     else:
         modules = [
             Extension(
-                hidraw_module,
+                "hid",
                 sources=["hidraw.pyx"],
                 extra_compile_args=[pkgconfig.cflags('hidapi >= 0.14')],
                 extra_link_args=[pkgconfig.libs('hidapi >= 0.14')]
