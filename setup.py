@@ -8,12 +8,12 @@ import shlex
 import subprocess
 import sys
 
-min_required_hidapi_version = '0.14'
+min_required_hidapi_version = "0.14"
 
-libusb_pkgconfig = 'libusb-1.0 >= 1.0.9'
-hidapi_libusb_pkgconfig = 'hidapi-libusb >= ' + min_required_hidapi_version
-hidapi_hidraw_pkgconfig = 'hidapi-hidraw >= ' + min_required_hidapi_version
-hidapi_pkgconfig = 'hidapi >= ' + min_required_hidapi_version
+libusb_pkgconfig = "libusb-1.0 >= 1.0.9"
+hidapi_libusb_pkgconfig = "hidapi-libusb >= " + min_required_hidapi_version
+hidapi_hidraw_pkgconfig = "hidapi-hidraw >= " + min_required_hidapi_version
+hidapi_pkgconfig = "hidapi >= " + min_required_hidapi_version
 
 tld = os.path.abspath(os.path.dirname(__file__))
 embedded_hidapi_topdir = os.path.join(tld, "hidapi")
@@ -21,8 +21,9 @@ embedded_hidapi_include = os.path.join(embedded_hidapi_topdir, "hidapi")
 
 
 def get_extension_compiler_type():
-    """Returns a compiler to be used by setuptools to build Extensions
-        Taken from https://github.com/pypa/setuptools/issues/2806#issuecomment-961805789
+    """
+    Returns a compiler to be used by setuptools to build Extensions
+    Taken from https://github.com/pypa/setuptools/issues/2806#issuecomment-961805789
     """
     d = Distribution()
     build_ext = Distribution().get_command_obj("build_ext")
@@ -39,7 +40,7 @@ def get_extension_compiler_type():
 # this could have been just pkgconfig.configure_extension(), but: https://github.com/matze/pkgconfig/issues/65
 # additionally contains a few small improvements
 def pkgconfig_configure_extension(ext, package):
-    pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
+    pkg_config_exe = os.environ.get("PKG_CONFIG", None) or "pkg-config"
 
     def exists(package):
         cmd = f"{pkg_config_exe} --exists '{package}'"
@@ -53,17 +54,17 @@ def pkgconfig_configure_extension(ext, package):
         proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
         out, err = proc.communicate()
 
-        return out.rstrip().decode('utf-8')
+        return out.rstrip().decode("utf-8")
 
     def query_and_extend(option, target):
-        os_opts = ['--msvc-syntax'] if get_extension_compiler_type() == 'msvc' else []
+        os_opts = ["--msvc-syntax"] if get_extension_compiler_type() == "msvc" else []
         flags = query_pkg_config(package, *os_opts, option)
-        flags = flags.replace('\\"', '')
+        flags = flags.replace('\\"', "")
         if flags:
-            target.extend(re.split(r'(?<!\\) ', flags))
+            target.extend(re.split(r"(?<!\\) ", flags))
 
-    query_and_extend('--cflags', ext.extra_compile_args)
-    query_and_extend('--libs', ext.extra_link_args)
+    query_and_extend("--cflags", ext.extra_compile_args)
+    query_and_extend("--libs", ext.extra_link_args)
 
     return ext
 
@@ -76,7 +77,9 @@ def check_deprecated_without_libusb():
     # already the default behavior, but accept the old option
     if "--without-libusb" in sys.argv:
         sys.argv.remove("--without-libusb")
-        print("Without libusb is already a default, '--without-libusb' option is redundant and deprecated")
+        print(
+            "Without libusb is already a default, '--without-libusb' option is redundant and deprecated"
+        )
 
 
 def hid_from_embedded_hidapi():
@@ -87,7 +90,7 @@ def hid_from_embedded_hidapi():
                 "hid",
                 sources=["hid.pyx", hidapi_src("windows")],
                 include_dirs=[embedded_hidapi_include],
-                extra_compile_args=['-DHID_API_NO_EXPORT_DEFINE'],
+                extra_compile_args=["-DHID_API_NO_EXPORT_DEFINE"],
                 libraries=["setupapi"],
             )
         ]
@@ -102,9 +105,20 @@ def hid_from_embedded_hidapi():
                 sources=["hid.pyx", hidapi_src("mac")],
                 include_dirs=[embedded_hidapi_include],
                 # TODO: remove -Wno-unreachable-code when the time comes: https://github.com/cython/cython/issues/3172
-                extra_compile_args=['-isysroot', macos_sdk_path, '-Wno-unreachable-code'],
+                extra_compile_args=[
+                    "-isysroot",
+                    macos_sdk_path,
+                    "-Wno-unreachable-code",
+                ],
                 # TODO: remove '-framework AppKit' after switching to 0.14.1 or newer
-                extra_link_args=['-framework', 'IOKit', '-framework', 'CoreFoundation', '-framework', 'AppKit']
+                extra_link_args=[
+                    "-framework",
+                    "IOKit",
+                    "-framework",
+                    "CoreFoundation",
+                    "-framework",
+                    "AppKit",
+                ],
             )
         ]
 
@@ -112,7 +126,11 @@ def hid_from_embedded_hidapi():
         modules = []
         if "--with-libusb" in sys.argv:
             sys.argv.remove("--with-libusb")
+            HIDAPI_WITH_LIBUSB = True
+        else:
+            HIDAPI_WITH_LIBUSB = bool(os.getenv("HIDAPI_WITH_LIBUSB"))
 
+        if HIDAPI_WITH_LIBUSB:
             hidraw_module = "hidraw"
             modules.append(
                 pkgconfig_configure_extension(
@@ -121,7 +139,7 @@ def hid_from_embedded_hidapi():
                         sources=["hid.pyx", hidapi_src("libusb")],
                         include_dirs=[embedded_hidapi_include],
                     ),
-                    libusb_pkgconfig
+                    libusb_pkgconfig,
                 )
             )
         else:
@@ -145,7 +163,7 @@ def hid_from_embedded_hidapi():
                     sources=["hid.pyx", hidapi_src("libusb")],
                     include_dirs=[embedded_hidapi_include],
                 ),
-                libusb_pkgconfig
+                libusb_pkgconfig,
             )
         ]
 
@@ -157,12 +175,15 @@ def hid_from_system_hidapi():
         modules = []
         if "--with-libusb" in sys.argv:
             sys.argv.remove("--with-libusb")
+            HIDAPI_WITH_LIBUSB = True
+        else:
+            HIDAPI_WITH_LIBUSB = bool(os.getenv("HIDAPI_WITH_LIBUSB"))
 
+        if HIDAPI_WITH_LIBUSB:
             hidraw_module = "hidraw"
             modules.append(
                 pkgconfig_configure_extension(
-                    Extension("hid", sources=["hid.pyx"]),
-                    hidapi_libusb_pkgconfig
+                    Extension("hid", sources=["hid.pyx"]), hidapi_libusb_pkgconfig
                 )
             )
         else:
@@ -172,14 +193,13 @@ def hid_from_system_hidapi():
         modules.append(
             pkgconfig_configure_extension(
                 Extension(hidraw_module, sources=["hidraw.pyx"]),
-                hidapi_hidraw_pkgconfig
+                hidapi_hidraw_pkgconfig,
             )
         )
     else:
         modules = [
             pkgconfig_configure_extension(
-                Extension("hid", sources=["hid.pyx"]),
-                hidapi_pkgconfig
+                Extension("hid", sources=["hid.pyx"]), hidapi_pkgconfig
             )
         ]
 
@@ -187,17 +207,22 @@ def hid_from_system_hidapi():
 
 
 def find_version():
-    filename = os.path.join(tld, 'hid.pyx')
+    filename = os.path.join(tld, "hid.pyx")
     with open(filename) as f:
         text = f.read()
     match = re.search(r"^__version__ = \"(.*)\"$", text, re.MULTILINE)
     if not match:
-        raise RuntimeError('cannot find version')
+        raise RuntimeError("cannot find version")
     return match.group(1)
 
 
 if "--with-system-hidapi" in sys.argv:
     sys.argv.remove("--with-system-hidapi")
+    HIDAPI_SYSTEM_HIDAPI = True
+else:
+    HIDAPI_SYSTEM_HIDAPI = bool(os.getenv("HIDAPI_SYSTEM_HIDAPI"))
+
+if HIDAPI_SYSTEM_HIDAPI:
     modules = hid_from_system_hidapi()
 else:
     modules = hid_from_embedded_hidapi()

@@ -53,9 +53,14 @@ Build from source
 
    On Linux, the hidraw API is now used by default, and the libusb API is not
    included. That is, --without-libusb is now the default behavior.
-   To force the use of the libusb API instead, use the --with-libusb option.
+   To force the use of the libusb API instead, use the --with-libusb option::
 
     $ python setup.py build --with-libusb
+
+   Or you can also use the environment variable::
+
+    $ export HIDAPI_WITH_LIBUSB=1
+    $ python setup.py build
 
 3. Install cython-hidapi module into your Python distribution::
 
