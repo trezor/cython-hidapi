@@ -112,7 +112,11 @@ def hid_from_embedded_hidapi():
         modules = []
         if "--with-libusb" in sys.argv:
             sys.argv.remove("--with-libusb")
+            HIDAPI_WITH_LIBUSB = True
+        else:
+            HIDAPI_WITH_LIBUSB = bool(os.getenv("HIDAPI_WITH_LIBUSB"))
 
+        if HIDAPI_WITH_LIBUSB:
             hidraw_module = "hidraw"
             modules.append(
                 pkgconfig_configure_extension(
@@ -157,7 +161,11 @@ def hid_from_system_hidapi():
         modules = []
         if "--with-libusb" in sys.argv:
             sys.argv.remove("--with-libusb")
+            HIDAPI_WITH_LIBUSB = True
+        else:
+            HIDAPI_WITH_LIBUSB = bool(os.getenv("HIDAPI_WITH_LIBUSB"))
 
+        if HIDAPI_WITH_LIBUSB:
             hidraw_module = "hidraw"
             modules.append(
                 pkgconfig_configure_extension(
@@ -198,6 +206,11 @@ def find_version():
 
 if "--with-system-hidapi" in sys.argv:
     sys.argv.remove("--with-system-hidapi")
+    HIDAPI_SYSTEM_HIDAPI = True
+else:
+    HIDAPI_SYSTEM_HIDAPI = bool(os.getenv("HIDAPI_SYSTEM_HIDAPI"))
+
+if HIDAPI_SYSTEM_HIDAPI:
     modules = hid_from_system_hidapi()
 else:
     modules = hid_from_embedded_hidapi()
