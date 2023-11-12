@@ -32,16 +32,15 @@ def hid_from_embedded_hidapi():
         macos_sdk_path = (
             subprocess.check_output(["xcrun", "--show-sdk-path"]).decode().strip()
         )
-        os.environ["CFLAGS"] = (
-            '-isysroot "%s" -framework IOKit -framework CoreFoundation -framework AppKit'
-            % macos_sdk_path
-        )
-        os.environ["LDFLAGS"] = ""
         modules = [
             Extension(
                 "hid",
                 sources=["hid.pyx", hidapi_src("mac")],
-                include_dirs=[embedded_hidapi_include]
+                include_dirs=[embedded_hidapi_include],
+                # TODO: -Wno-unreachable-code: https://github.com/cython/cython/issues/3172
+                extra_compile_args=['-isysroot', macos_sdk_path, '-Wno-unreachable-code'],
+                # TODO: remove '-framework AppKit' after switching to 0.14.1 or newer
+                extra_link_args=['-framework', 'IOKit', '-framework', 'CoreFoundation', '-framework', 'AppKit']
             )
         ]
 
