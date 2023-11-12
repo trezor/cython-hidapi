@@ -12,7 +12,7 @@ jobs:
         platform: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.8", "3.12"]
         system-hidapi: ["", "--with-system-hidapi"]
-        libusb-backend: ["", "--without-libusb"]
+        libusb-backend: ["", "--with-libusb"]
         exclude:
           # TODO: it is non-trivial to install pkg-config and HIDAPI,
           # and configure it run work in runtime
@@ -20,9 +20,9 @@ jobs:
             system-hidapi: "--with-system-hidapi"
           # libusb backend is not present on Windows/macOS
           - platform: macos-latest
-            libusb-backend: "--without-libusb"
+            libusb-backend: "--with-libusb"
           - platform: windows-latest
-            libusb-backend: "--without-libusb"
+            libusb-backend: "--with-libusb"
 
     runs-on: ${{ matrix.platform }}
 
