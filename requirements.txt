@@ -1,2 +1,2 @@
 Cython>=0.24
-pkgconfig
+pkgconfig>=1.5.3

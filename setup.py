@@ -7,9 +7,22 @@ import re
 import subprocess
 import sys
 
+min_required_hidapi_version = '0.14'
+
+libusb_pkgconfig = 'libusb-1.0 >= 1.0.9'
+hidapi_libusb_pkgconfig = 'hidapi-libusb >= ' + min_required_hidapi_version
+hidapi_hidraw_pkgconfig = 'hidapi-hidraw >= ' + min_required_hidapi_version
+hidapi_pkgconfig = 'hidapi >= ' + min_required_hidapi_version
+
 tld = os.path.abspath(os.path.dirname(__file__))
 embedded_hidapi_topdir = os.path.join(tld, "hidapi")
 embedded_hidapi_include = os.path.join(embedded_hidapi_topdir, "hidapi")
+
+
+def pkgconfig_configure_extension(ext, package):
+    # need to loose the version information - see https://github.com/matze/pkgconfig/issues/65
+    package = package.split()[0]
+    pkgconfig.configure_extension(ext, package)
 
 
 def hidapi_src(platform):
@@ -24,6 +37,7 @@ def hid_from_embedded_hidapi():
                 "hid",
                 sources=["hid.pyx", hidapi_src("windows")],
                 include_dirs=[embedded_hidapi_include],
+                extra_compile_args=['-DHID_API_NO_EXPORT_DEFINE'],
                 libraries=["setupapi"],
             )
         ]
@@ -51,15 +65,13 @@ def hid_from_embedded_hidapi():
             hidraw_module = "hid"
         else:
             hidraw_module = "hidraw"
-            modules.append(
-                Extension(
-                    "hid",
-                    sources=["hid.pyx", hidapi_src("libusb")],
-                    include_dirs=[embedded_hidapi_include],
-                    extra_compile_args=[pkgconfig.cflags('libusb-1.0 >= 1.0.9')],
-                    extra_link_args=[pkgconfig.libs('libusb-1.0 >= 1.0.9')]
-                )
+            hid = Extension(
+                "hid",
+                sources=["hid.pyx", hidapi_src("libusb")],
+                include_dirs=[embedded_hidapi_include],
             )
+            pkgconfig_configure_extension(hid, libusb_pkgconfig)
+            modules.append(hid)
         modules.append(
             Extension(
                 hidraw_module,
@@ -70,15 +82,14 @@ def hid_from_embedded_hidapi():
         )
 
     else:
-        modules = [
-            Extension(
-                "hid",
-                sources=["hid.pyx", hidapi_src("libusb")],
-                include_dirs=[embedded_hidapi_include],
-                extra_compile_args=[pkgconfig.cflags('libusb-1.0 >= 1.0.9')],
-                extra_link_args=[pkgconfig.libs('libusb-1.0 >= 1.0.9')]
-            )
-        ]
+        hid = Extension(
+            "hid",
+            sources=["hid.pyx", hidapi_src("libusb")],
+            include_dirs=[embedded_hidapi_include],
+        )
+        pkgconfig_configure_extension(hid, libusb_pkgconfig)
+        modules.append(hid)
+        modules = [hid]
 
     return modules
 
@@ -91,31 +102,17 @@ def hid_from_system_hidapi():
             hidraw_module = "hid"
         else:
             hidraw_module = "hidraw"
-            modules.append(
-                Extension(
-                    "hid",
-                    sources=["hid.pyx"],
-                    extra_compile_args=[pkgconfig.cflags('hidapi-libusb >= 0.14')],
-                    extra_link_args=[pkgconfig.libs('hidapi-libusb >= 0.14')]
-                )
-            )
-        modules.append(
-            Extension(
-                hidraw_module,
-                sources=["hidraw.pyx"],
-                extra_compile_args=[pkgconfig.cflags('hidapi-hidraw >= 0.14')],
-                extra_link_args=[pkgconfig.libs('hidapi-hidraw >= 0.14')]
-            )
-        )
+            hid = Extension("hid", sources=["hid.pyx"])
+            pkgconfig_configure_extension(hid, hidapi_libusb_pkgconfig)
+            modules.append(hid)
+        hidraw = Extension(hidraw_module, sources=["hidraw.pyx"])
+        pkgconfig_configure_extension(hidraw, hidapi_hidraw_pkgconfig)
+        modules.append(hidraw)
     else:
-        modules = [
-            Extension(
-                "hid",
-                sources=["hidraw.pyx"],
-                extra_compile_args=[pkgconfig.cflags('hidapi >= 0.14')],
-                extra_link_args=[pkgconfig.libs('hidapi >= 0.14')]
-            )
-        ]
+        hid = Extension("hid", sources=["hid.pyx"])
+        pkgconfig_configure_extension(hid, hidapi_pkgconfig)
+        modules = [hid]
+
     return modules
 
 
