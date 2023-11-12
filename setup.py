@@ -76,7 +76,7 @@ def check_deprecated_without_libusb():
     # already the default behavior, but accept the old option
     if "--without-libusb" in sys.argv:
         sys.argv.remove("--without-libusb")
-        print("Withou libusb is already a default, '--without-libusb' option is redundant and deprecated")
+        print("Without libusb is already a default, '--without-libusb' option is redundant and deprecated")
 
 
 def hid_from_embedded_hidapi():
