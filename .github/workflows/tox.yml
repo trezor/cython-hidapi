@@ -62,8 +62,8 @@ jobs:
 
     - name: Test with tox
       env:
-        HIDAPI_WITH_LIBUSB: ${{ matrix.system-hidapi == '--with-system-hidapi' && '1' || '0' }}
-        HIDAPI_SYSTEM_HIDAPI: ${{ matrix.libusb-backend == '--with-libusb' && '1' || '0' }}
+        HIDAPI_SYSTEM_HIDAPI: ${{ matrix.system-hidapi == '--with-system-hidapi' && '1' || '0' }}
+        HIDAPI_WITH_LIBUSB: ${{ matrix.libusb-backend == '--with-libusb' && '1' || '0' }}
       run: |
         pip install .
         tox
