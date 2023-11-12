@@ -49,7 +49,7 @@ def pkgconfig_configure_extension(ext, package):
         raise Exception(f"pkg-config package '{package}' not found")
 
     def query_pkg_config(package, *options):
-        cmd = "{pkg_config_exe} {' '.join(options)} '{package}'"
+        cmd = f"{pkg_config_exe} {' '.join(options)} '{package}'"
         proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
         out, err = proc.communicate()
 
