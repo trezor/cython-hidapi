@@ -40,7 +40,7 @@ jobs:
       run: |
         sudo apt install cmake
         mkdir hidapi_build && cd hidapi_build
-        cmake -B . -S ../hidapi
+        cmake -B . -S ../hidapi -DCMAKE_INSTALL_PREFIX=/usr
         make
         sudo make install
 
