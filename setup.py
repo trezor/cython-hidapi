@@ -1,9 +1,10 @@
 #!/usr/bin/python
 from Cython.Build import cythonize
-from setuptools import setup, Extension
+from setuptools import setup, Extension, Distribution
+from subprocess import call, PIPE, Popen
 import os
-import pkgconfig
 import re
+import shlex
 import subprocess
 import sys
 
@@ -19,10 +20,49 @@ embedded_hidapi_topdir = os.path.join(tld, "hidapi")
 embedded_hidapi_include = os.path.join(embedded_hidapi_topdir, "hidapi")
 
 
+def get_extension_compiler_type():
+    """Returns a compiler to be used by setuptools to build Extensions
+        Taken from https://github.com/pypa/setuptools/issues/2806#issuecomment-961805789
+    """
+    d = Distribution()
+    build_ext = Distribution().get_command_obj("build_ext")
+    build_ext.finalize_options()
+    # register an extension to ensure a compiler is created
+    build_ext.extensions = [Extension("ignored", ["ignored.c"])]
+    # disable building fake extensions
+    build_ext.build_extensions = lambda: None
+    # run to populate self.compiler
+    build_ext.run()
+    return build_ext.compiler.compiler_type
+
+
+# this could have been just pkgconfig.configure_extension(), but: https://github.com/matze/pkgconfig/issues/65
 def pkgconfig_configure_extension(ext, package):
-    # need to loose the version information - see https://github.com/matze/pkgconfig/issues/65
-    package = package.split()[0]
-    pkgconfig.configure_extension(ext, package)
+    pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
+
+    def exists(package):
+        cmd = "{0} --exists '{1}'".format(pkg_config_exe, package)
+        return call(shlex.split(cmd)) == 0
+
+    if not exists(package):
+        raise Exception(f"pkg-config package '{package}' not found")
+
+    def query_pkg_config(package, *options):
+        cmd = "{0} {1} '{2}'".format(pkg_config_exe, ' '.join(options), package)
+        proc = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+        out, err = proc.communicate()
+
+        return out.rstrip().decode('utf-8')
+
+    def query_and_extend(option, target):
+        os_opts = ['--msvc-syntax'] if get_extension_compiler_type() == 'msvc' else []
+        flags = query_pkg_config(package, *os_opts, option)
+        flags = flags.replace('\\"', '')
+        if flags:
+            target.extend(re.split(r'(?<!\\) ', flags))
+
+    query_and_extend('--cflags', ext.extra_compile_args)
+    query_and_extend('--libs', ext.extra_link_args)
 
 
 def hidapi_src(platform):
