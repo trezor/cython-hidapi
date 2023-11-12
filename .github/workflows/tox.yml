@@ -61,6 +61,9 @@ jobs:
         pip install -r requirements.txt --upgrade
 
     - name: Test with tox
+      env:
+        HIDAPI_WITH_LIBUSB: ${{ matrix.system-hidapi == '--with-system-hidapi' && '1' || '0' }}
+        HIDAPI_SYSTEM_HIDAPI: ${{ matrix.libusb-backend == '--with-libusb' && '1' || '0' }}
       run: |
-        python setup.py install ${{ matrix.system-hidapi }} ${{ matrix.libusb-backend }}
+        pip install .
         tox
