@@ -51,7 +51,7 @@ Build from source
 
     $ python setup.py build
 
-   On Linux, the hidaraw API is now used by default, and the libusb API is not
+   On Linux, the hidraw API is now used by default, and the libusb API is not
    included. That is, --without-libusb is now the default behavior.
    To force the use of the libusb API instead, use the --with-libusb option.
 
