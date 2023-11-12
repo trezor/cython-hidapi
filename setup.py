@@ -20,6 +20,12 @@ embedded_hidapi_topdir = os.path.join(tld, "hidapi")
 embedded_hidapi_include = os.path.join(embedded_hidapi_topdir, "hidapi")
 
 
+def to_bool(bool_str):
+    if str(bool_str).lower() in ["true", "t", "1", "on", "yes", "y"]:
+        return True
+    return False
+
+
 def get_extension_compiler_type():
     """
     Returns a compiler to be used by setuptools to build Extensions
@@ -128,7 +134,7 @@ def hid_from_embedded_hidapi():
             sys.argv.remove("--with-libusb")
             HIDAPI_WITH_LIBUSB = True
         else:
-            HIDAPI_WITH_LIBUSB = bool(os.getenv("HIDAPI_WITH_LIBUSB"))
+            HIDAPI_WITH_LIBUSB = to_bool(os.getenv("HIDAPI_WITH_LIBUSB"))
 
         if HIDAPI_WITH_LIBUSB:
             hidraw_module = "hidraw"
@@ -177,7 +183,7 @@ def hid_from_system_hidapi():
             sys.argv.remove("--with-libusb")
             HIDAPI_WITH_LIBUSB = True
         else:
-            HIDAPI_WITH_LIBUSB = bool(os.getenv("HIDAPI_WITH_LIBUSB"))
+            HIDAPI_WITH_LIBUSB = to_bool(os.getenv("HIDAPI_WITH_LIBUSB"))
 
         if HIDAPI_WITH_LIBUSB:
             hidraw_module = "hidraw"
@@ -220,7 +226,7 @@ if "--with-system-hidapi" in sys.argv:
     sys.argv.remove("--with-system-hidapi")
     HIDAPI_SYSTEM_HIDAPI = True
 else:
-    HIDAPI_SYSTEM_HIDAPI = bool(os.getenv("HIDAPI_SYSTEM_HIDAPI"))
+    HIDAPI_SYSTEM_HIDAPI = to_bool(os.getenv("HIDAPI_SYSTEM_HIDAPI"))
 
 if HIDAPI_SYSTEM_HIDAPI:
     modules = hid_from_system_hidapi()
