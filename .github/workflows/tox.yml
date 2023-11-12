@@ -19,7 +19,9 @@ jobs:
             system-hidapi: "--with-system-hidapi"
         include:
           - platform: ubuntu-latest
-            libusb-backend: ["", "--without-libusb"]
+            libusb-backend: "--without-libusb"
+          - platform: ubuntu-latest
+            libusb-backend: ""
 
     runs-on: ${{ matrix.platform }}
 
@@ -54,4 +56,3 @@ jobs:
     - name: Test with tox
       run: |
         python setup.py install ${{ matrix.system-hidapi }} ${{ matrix.libusb-backend }}
-        tox
