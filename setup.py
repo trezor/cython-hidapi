@@ -37,6 +37,7 @@ def get_extension_compiler_type():
 
 
 # this could have been just pkgconfig.configure_extension(), but: https://github.com/matze/pkgconfig/issues/65
+# additionally contains a few small improvements
 def pkgconfig_configure_extension(ext, package):
     pkg_config_exe = os.environ.get('PKG_CONFIG', None) or 'pkg-config'
 
