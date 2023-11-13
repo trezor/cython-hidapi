@@ -1,39 +1,24 @@
-name: Native Python package
+name: VM Python package
 
 on:
   - push
   - pull_request
 
 jobs:
-  build:
+  bsd:
+    runs-on: ubuntu-22.04
+
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-latest, macos-latest, windows-latest]
+        platform: [freebsd-vm]
         python-version: ["3.8", "3.12"]
         system-hidapi: ["", "--with-system-hidapi"]
-        libusb-backend: ["", "--with-libusb"]
-        exclude:
-          # TODO: it is non-trivial to install pkg-config and HIDAPI,
-          # and configure it run work in runtime
-          - platform: windows-latest
-            system-hidapi: "--with-system-hidapi"
-          # libusb backend is not present on Windows/macOS
-          - platform: macos-latest
-            libusb-backend: "--with-libusb"
-          - platform: windows-latest
-            libusb-backend: "--with-libusb"
-
-    runs-on: ${{ matrix.platform }}
 
     steps:
     - uses: actions/checkout@v4
       with:
         submodules: true
-
-    - name: Install Ubuntu dependencies
-      if: matrix.platform == 'ubuntu-latest'
-      run: sudo apt install libudev-dev libusb-1.0-0-dev
 
     - name: Install Ubuntu HIDAPI
       if:  ${{ (matrix.platform == 'ubuntu-latest') && (matrix.system-hidapi == '--with-system-hidapi') }}
@@ -44,10 +29,6 @@ jobs:
         cmake -B . -S ../hidapi -DCMAKE_INSTALL_PREFIX=/usr
         make
         sudo make install
-
-    - name: Install macOS HIDAPI
-      if:  ${{ (matrix.platform == 'macos-latest') && (matrix.system-hidapi == '--with-system-hidapi') }}
-      run: brew install hidapi
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
@@ -60,10 +41,18 @@ jobs:
         python -m pip install setuptools tox tox-gh-actions
         pip install -r requirements.txt --upgrade
 
-    - name: Test with tox
+    - name: Run in FreeBSD
+      if: matrix.platform == 'freebsd-vm'
+      uses: vmactions/freebsd-vm@v1
       env:
         HIDAPI_SYSTEM_HIDAPI: ${{ matrix.system-hidapi == '--with-system-hidapi' && '1' || '0' }}
         HIDAPI_WITH_LIBUSB: ${{ matrix.libusb-backend == '--with-libusb' && '1' || '0' }}
-      run: |
-        pip install .
-        tox
+      with:
+        envs: 'HIDAPI_SYSTEM_HIDAPI HIDAPI_WITH_LIBUSB'
+        usesh: true
+        prepare: |
+          pkg install -y ninja libiconv pkgconf cmake
+
+        run: |
+          pip install .
+          tox
