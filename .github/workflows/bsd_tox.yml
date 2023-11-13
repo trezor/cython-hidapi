@@ -51,4 +51,4 @@ jobs:
           pip install -r requirements.txt --upgrade
 
           pip install .
-          tox
+          python -m tox
