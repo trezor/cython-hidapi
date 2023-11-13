@@ -37,9 +37,11 @@ jobs:
       with:
         envs: 'HIDAPI_SYSTEM_HIDAPI HIDAPI_WITH_LIBUSB'
         usesh: true
+        copyback: false
         prepare: |
           set -e
-          pkg install -y ninja libiconv pkgconf cmake lang/python3 devel/py-pip
+          pkg install -y ninja libiconv pkgconf cmake lang/python3 devel/py-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'hidapi' || '' }}
+
           python3 -m pip install --upgrade pip
           python3 -m pip install setuptools tox tox-gh-actions
           cd work || true
