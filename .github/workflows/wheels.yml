@@ -35,6 +35,7 @@ jobs:
           CIBW_ARCHS_LINUX: "x86_64 i686 aarch64"
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
           CIBW_BEFORE_ALL_LINUX: yum install -y libusb1-devel libudev-devel
+          HIDAPI_WITH_LIBUSB: 1
 
       - name: Store artifacts
         uses: actions/upload-artifact@v3
