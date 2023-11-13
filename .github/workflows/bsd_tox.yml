@@ -5,7 +5,7 @@ on:
   - pull_request
 
 jobs:
-  bsd:
+  vm:
     runs-on: ubuntu-22.04
 
     strategy:
@@ -36,7 +36,7 @@ jobs:
           cd cython-hidapi || true
           pwd && ls -l1
 
-          pkg install -y libiconv pkgconf py-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'hidapi' || '' }}
+          pkg install -y libiconv pkgconf devel/py-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'hidapi' || '' }}
 
           python3 -m pip install --upgrade pip
           python3 -m pip install setuptools tox tox-gh-actions
@@ -70,7 +70,7 @@ jobs:
           cd cython-hidapi || true
           pwd && ls -l1
 
-          /usr/sbin/pkg_add pkgconf libusb1 libiconv py-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'libhidapi' || '' }}
+          /usr/sbin/pkg_add pkgconf libusb1 libiconv devel/py-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'libhidapi' || '' }}
 
           python3 -m pip install --upgrade pip
           python3 -m pip install setuptools tox tox-gh-actions
@@ -88,7 +88,8 @@ jobs:
           tox
 
     - name: Run in OpenBSD
-      if: ${{ matrix.platform == 'OpenBSD' }}
+      # the VM fails to start when this script was developed
+      if: ${{ false && matrix.platform == 'OpenBSD' }}
       uses: vmactions/openbsd-vm@v1
       env:
         HIDAPI_SYSTEM_HIDAPI: ${{ matrix.system-hidapi == '--with-system-hidapi' && '1' || '0' }}
