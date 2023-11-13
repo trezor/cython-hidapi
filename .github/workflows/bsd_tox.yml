@@ -35,15 +35,15 @@ jobs:
         operating_system: ${{ matrix.platform.name }}
         version: ${{ matrix.platform.version }}
         shell: bash
-        copyback: false
+        sync_files: runner-to-vm
         run: |
           set -e
 
           pwd && ls -l1
 
-          ${{ matrix.platform.name == 'freebsd' && 'true' || 'false' }} && pkg install -y libiconv pkgconf lang/python3 devel/py-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'hidapi' || '' }}
-          ${{ matrix.platform.name == 'netbsd' && 'true' || 'false' }} && /usr/sbin/pkg_add pkgconf libusb1 libiconv py3-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'libhidapi' || '' }}
-          ${{ matrix.platform.name == 'openbsd' && 'true' || 'false' }} && pkg_add pkgconf libusb1-- libiconv python3 py3-pip cmake ninja
+          ${{ matrix.platform.name == 'freebsd' && 'true' || 'false' }} && sudo pkg install -y libiconv pkgconf lang/python3 devel/py-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'hidapi' || '' }}
+          ${{ matrix.platform.name == 'netbsd' && 'true' || 'false' }} && sudo /usr/sbin/pkg_add pkgconf libusb1 libiconv py3-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'libhidapi' || '' }}
+          ${{ matrix.platform.name == 'openbsd' && 'true' || 'false' }} && sudo pkg_add pkgconf libusb1-- libiconv python3 py3-pip cmake ninja
           ${{ ((matrix.platform.name == 'openbsd') && (matrix.system-hidapi == '--with-system-hidapi')) && './build_install_hidapi.sh' || 'true' }}
 
           python -m pip install --upgrade pip
