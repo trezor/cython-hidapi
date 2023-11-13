@@ -34,7 +34,6 @@ jobs:
       uses: vmactions/freebsd-vm@v1
       env:
         HIDAPI_SYSTEM_HIDAPI: ${{ matrix.system-hidapi == '--with-system-hidapi' && '1' || '0' }}
-        HIDAPI_WITH_LIBUSB: ${{ matrix.libusb-backend == '--with-libusb' && '1' || '0' }}
       with:
         envs: 'HIDAPI_SYSTEM_HIDAPI HIDAPI_WITH_LIBUSB'
         usesh: true
@@ -43,9 +42,13 @@ jobs:
           pkg install -y ninja libiconv pkgconf cmake lang/python3 devel/py-pip
           python3 -m pip install --upgrade pip
           python3 -m pip install setuptools tox tox-gh-actions
+          cd cython-hidapi || true
+          pwd && ls -l1
           pip3 install -r requirements.txt --upgrade
 
         run: |
           set -e
+          cd cython-hidapi || true
+          pwd && ls -l1
           pip3 install .
           tox
