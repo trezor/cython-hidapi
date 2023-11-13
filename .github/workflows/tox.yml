@@ -33,17 +33,14 @@ jobs:
 
     - name: Install Ubuntu dependencies
       if: matrix.platform == 'ubuntu-latest'
-      run: sudo apt install libudev-dev libusb-1.0-0-dev
+      run: sudo apt install libudev-dev libusb-1.0-0-dev ninja-build
 
     - name: Install Ubuntu HIDAPI
       if:  ${{ (matrix.platform == 'ubuntu-latest') && (matrix.system-hidapi == '--with-system-hidapi') }}
       # the default apt version of libhidapi-dev is too old, need to build the one we know would work
       run: |
         sudo apt install cmake
-        mkdir hidapi_build && cd hidapi_build
-        cmake -B . -S ../hidapi -DCMAKE_INSTALL_PREFIX=/usr
-        make
-        sudo make install
+        ./build_install_hidapi.sh
 
     - name: Install macOS HIDAPI
       if:  ${{ (matrix.platform == 'macos-latest') && (matrix.system-hidapi == '--with-system-hidapi') }}

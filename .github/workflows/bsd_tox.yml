@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [freebsd-vm]
+        platform: [freebsd-vm, netbsd-vm, openbsd-vm]
         system-hidapi: ["", "--with-system-hidapi"]
 
     steps:
@@ -19,19 +19,8 @@ jobs:
       with:
         submodules: true
 
-    - name: Install Ubuntu HIDAPI
-      if:  ${{ (matrix.platform == 'ubuntu-latest') && (matrix.system-hidapi == '--with-system-hidapi') }}
-      # the default apt version of libhidapi-dev is too old, need to build the one we know would work
-      run: |
-        sudo apt install cmake
-        mkdir hidapi_build && cd hidapi_build
-        cmake -B . -S ../hidapi -DCMAKE_INSTALL_PREFIX=/usr
-        make
-        sudo make install
-
-    - name: Run in FreeBSD
-      if: matrix.platform == 'freebsd-vm'
-      uses: vmactions/freebsd-vm@v1
+    - name: Run in VM
+      uses: vmactions/${{ matrix.platform }}@v1
       env:
         HIDAPI_SYSTEM_HIDAPI: ${{ matrix.system-hidapi == '--with-system-hidapi' && '1' || '0' }}
       with:
@@ -40,14 +29,20 @@ jobs:
         copyback: false
         prepare: |
           set -e
-          pkg install -y ninja libiconv pkgconf cmake lang/python3 devel/py-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'hidapi' || '' }}
 
-          python3 -m pip install --upgrade pip
-          python3 -m pip install setuptools tox tox-gh-actions
           cd work || true
           cd cython-hidapi || true
           cd cython-hidapi || true
           pwd && ls -l1
+
+          ${{ matrix.platform == 'freebsd-vm' && true || false }} && pkg install -y libiconv pkgconf py-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'hidapi' || '' }}
+          ${{ matrix.platform == 'netbsd-vm' && true || false }} && /usr/sbin/pkg_add pkgconf libusb1 libiconv py-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'libhidapi' || '' }}
+          ${{ matrix.platform == 'openbsd-vm' && true || false }} && pkg_add pkgconf libusb1-- libiconv py-pip cmake ninja
+          ${{ ((matrix.platform == 'openbsd-vm') && (matrix.system-hidapi == '--with-system-hidapi')) && ./build_install_hidapi.sh || true }}
+
+          python3 -m pip install --upgrade pip
+          python3 -m pip install setuptools tox tox-gh-actions
+
           pip3 install -r requirements.txt --upgrade
 
         run: |
