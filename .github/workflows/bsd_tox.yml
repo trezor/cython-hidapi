@@ -6,7 +6,7 @@ on:
 
 jobs:
   bsd:
-    runs-on: macos-latest
+    runs-on: ${{ matrix.platform.host }}
 
     strategy:
       fail-fast: false
@@ -14,11 +14,16 @@ jobs:
         platform: 
           - name: freebsd
             version: '13.2'
-            host: 
+            host: macos-latest
+
           - name: netbsd
             version: '9.3'
+            host: ubuntu-latest
+
           - name: openbsd
             version: '7.4'
+            host: macos-latest
+
         system-hidapi: ["", "--with-system-hidapi"]
 
     steps:
