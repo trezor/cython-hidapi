@@ -39,15 +39,12 @@ jobs:
         run: |
           set -e
 
-          cd work || true
-          cd cython-hidapi || true
-          cd cython-hidapi || true
           pwd && ls -l1
 
-          ${{ matrix.platform == 'freebsd' && 'true' || 'false' }} && pkg install -y libiconv pkgconf devel/py-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'hidapi' || '' }}
-          ${{ matrix.platform == 'netbsd' && 'true' || 'false' }} && /usr/sbin/pkg_add pkgconf libusb1 libiconv py3-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'libhidapi' || '' }}
-          ${{ matrix.platform == 'openbsd' && 'true' || 'false' }} && pkg_add pkgconf libusb1-- libiconv py3-pip cmake ninja
-          ${{ ((matrix.platform == 'openbsd') && (matrix.system-hidapi == '--with-system-hidapi')) && './build_install_hidapi.sh' || 'true' }}
+          ${{ matrix.platform.name == 'freebsd' && 'true' || 'false' }} && pkg install -y libiconv pkgconf lang/python3 devel/py-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'hidapi' || '' }}
+          ${{ matrix.platform.name == 'netbsd' && 'true' || 'false' }} && /usr/sbin/pkg_add pkgconf libusb1 libiconv py3-pip ${{ matrix.system-hidapi == '--with-system-hidapi' && 'libhidapi' || '' }}
+          ${{ matrix.platform.name == 'openbsd' && 'true' || 'false' }} && pkg_add pkgconf libusb1-- libiconv python3 py3-pip cmake ninja
+          ${{ ((matrix.platform.name == 'openbsd') && (matrix.system-hidapi == '--with-system-hidapi')) && './build_install_hidapi.sh' || 'true' }}
 
           python -m pip install --upgrade pip
           python -m pip install setuptools tox tox-gh-actions
