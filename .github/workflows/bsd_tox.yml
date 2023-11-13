@@ -12,7 +12,6 @@ jobs:
       fail-fast: false
       matrix:
         platform: [freebsd-vm]
-        python-version: ["3.8", "3.12"]
         system-hidapi: ["", "--with-system-hidapi"]
 
     steps:
@@ -30,17 +29,6 @@ jobs:
         make
         sudo make install
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install setuptools tox tox-gh-actions
-        pip install -r requirements.txt --upgrade
-
     - name: Run in FreeBSD
       if: matrix.platform == 'freebsd-vm'
       uses: vmactions/freebsd-vm@v1
@@ -51,8 +39,11 @@ jobs:
         envs: 'HIDAPI_SYSTEM_HIDAPI HIDAPI_WITH_LIBUSB'
         usesh: true
         prepare: |
-          pkg install -y ninja libiconv pkgconf cmake
+          pkg install -y ninja libiconv pkgconf cmake python3 python3-pip
+          python3 -m pip install --upgrade pip
+          python3 -m pip install setuptools tox tox-gh-actions
+          pip3 install -r requirements.txt --upgrade
 
         run: |
-          pip install .
+          pip3 install .
           tox
