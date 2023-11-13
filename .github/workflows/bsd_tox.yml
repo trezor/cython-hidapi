@@ -39,11 +39,13 @@ jobs:
         envs: 'HIDAPI_SYSTEM_HIDAPI HIDAPI_WITH_LIBUSB'
         usesh: true
         prepare: |
-          pkg install -y ninja libiconv pkgconf cmake python38 py38-pip
+          set -e
+          pkg install -y ninja libiconv pkgconf cmake lang/python3 devel/py-pip
           python3 -m pip install --upgrade pip
           python3 -m pip install setuptools tox tox-gh-actions
           pip3 install -r requirements.txt --upgrade
 
         run: |
+          set -e
           pip3 install .
           tox
