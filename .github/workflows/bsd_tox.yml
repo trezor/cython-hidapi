@@ -48,7 +48,7 @@ jobs:
 
           export PLATFORM_VERSION=${{ matrix.platform.version }}
           ${{ matrix.platform.name == 'freebsd' && 'sudo pkg install -y autoconf automake libtool gmake libiconv pkgconf lang/python3 lang/python devel/py-pip' || '' }}
-          ${{ matrix.platform.name == 'netbsd' && 'sudo pkg_add devel/autoconf devel/automake devel/libtool devel/gmake devel/pkgconf ldevel/ibusb1 converters/libiconv devel/py-pip' || '' }}
+          ${{ matrix.platform.name == 'netbsd' && 'export PATH=$PATH:/usr/sbin/; sudo pkg_add devel/autoconf devel/automake devel/libtool devel/gmake devel/pkgconf ldevel/ibusb1 converters/libiconv devel/py-pip' || '' }}
           ${{ matrix.platform.name == 'openbsd' && 'export AUTOCONF_VERSION=2.71; export AUTOMAKE_VERSION=1.15.1; sudo pkg_add autoconf-2.71 automake-1.15.1 libtool gmake pkgconf libusb1-- libiconv python3 py3-pip' || '' }}
           ${{ matrix.system-hidapi == '--with-system-hidapi' && './build_install_hidapi_autotools.sh' || '' }}
 
