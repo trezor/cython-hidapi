@@ -16,13 +16,20 @@ jobs:
             version: '13.2'
             host: macos-latest
 
+          # Issues:
+          # > pkg_add: no pkg found for 'autoconf', sorry.
+          # > pkg_add: no pkg found for 'devel/autoconf', sorry.
+          #
           - name: netbsd
-            version: '9.3'
+            version: '9.0'
             host: ubuntu-latest
 
-          - name: openbsd
-            version: '7.4'
-            host: macos-latest
+          # Issues:
+          # > bash: line 11: python: command not found
+          # > configure: error: HIDAPI is not supported on your operating system yet
+          #- name: openbsd
+          #  version: '7.4'
+          #  host: macos-latest
 
         system-hidapi: ["", "--with-system-hidapi"]
 
@@ -48,7 +55,7 @@ jobs:
 
           export PLATFORM_VERSION=${{ matrix.platform.version }}
           ${{ matrix.platform.name == 'freebsd' && 'sudo pkg install -y autoconf automake libtool gmake libiconv pkgconf lang/python3 lang/python devel/py-pip' || '' }}
-          ${{ matrix.platform.name == 'netbsd' && 'export PATH=$PATH:/usr/sbin/; sudo pkg_add devel/autoconf devel/automake devel/libtool devel/gmake devel/pkgconf ldevel/ibusb1 converters/libiconv devel/py-pip' || '' }}
+          ${{ matrix.platform.name == 'netbsd' && 'export PATH=$PATH:/usr/sbin/; sudo pkg_add devel/autoconf devel/automake devel/libtool devel/gmake devel/pkgconf devel/libusb1 converters/libiconv devel/py-pip' || '' }}
           ${{ matrix.platform.name == 'openbsd' && 'export AUTOCONF_VERSION=2.71; export AUTOMAKE_VERSION=1.15; sudo pkg_add autoconf-2.71 automake-1.15.1 libtool gmake pkgconf libusb1-- libiconv python3 py3-pip' || '' }}
           ${{ matrix.system-hidapi == '--with-system-hidapi' && './build_install_hidapi_autotools.sh' || '' }}
 
