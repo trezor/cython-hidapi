@@ -46,10 +46,10 @@ jobs:
 
           pwd && ls -l1
 
-          ${{ matrix.platform.name == 'freebsd' && 'sudo pkg install -y libiconv pkgconf lang/python3 lang/python devel/py-pip cmake ninja' || 'true' }}
-          ${{ matrix.platform.name == 'netbsd' && 'sudo /usr/sbin/pkg_add pkgconf libusb1 libiconv py3-pip cmake ninja ' || 'true' }}
-          ${{ matrix.platform.name == 'openbsd' && 'PKG_PATH="http://ftp.openbsd.org/pub/OpenBSD/$(uname -r)/packages/$(arch -s)/" sudo pkg_add pkgconf libusb1-- libiconv python3 py3-pip cmake ninja' || 'true' }}
-          ${{ matrix.system-hidapi == '--with-system-hidapi' && './build_install_hidapi.sh' || 'true' }}
+          ${{ matrix.platform.name == 'freebsd' && 'sudo pkg install -y autoconf automake gmake libiconv pkgconf lang/python3 lang/python devel/py-pip' || '' }}
+          ${{ matrix.platform.name == 'netbsd' && 'PKG_PATH="https://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -p)/${{ matrix.platform.version }}/All/" sudo /usr/sbin/pkg_add autoconf automake gmake pkgconf libusb1 libiconv py3-pip' || '' }}
+          ${{ matrix.platform.name == 'openbsd' && 'PKG_PATH="https://ftp.openbsd.org/pub/OpenBSD/$(uname -r)/packages/$(arch -s)/" sudo pkg_add autoconf automake gmake pkgconf libusb1-- libiconv python3 py3-pip' || '' }}
+          ${{ matrix.system-hidapi == '--with-system-hidapi' && './build_install_hidapi_autotools.sh' || '' }}
 
           python -m pip install --upgrade pip
           python -m pip install setuptools tox tox-gh-actions
