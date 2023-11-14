@@ -49,7 +49,7 @@ jobs:
           export PLATFORM_VERSION=${{ matrix.platform.version }}
           ${{ matrix.platform.name == 'freebsd' && 'sudo pkg install -y autoconf automake libtool gmake libiconv pkgconf lang/python3 lang/python devel/py-pip' || '' }}
           ${{ matrix.platform.name == 'netbsd' && 'export PKG_PATH="https://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/$(uname -p)/${PLATFORM_VERSION}/All/"; sudo /usr/sbin/pkg_add autoconf automake libtool gmake pkgconf libusb1 libiconv py3-pip' || '' }}
-          ${{ matrix.platform.name == 'openbsd' && 'export PKG_PATH="https://ftp.openbsd.org/pub/OpenBSD/$(uname -r)/packages/$(arch -s)/"; sudo pkg_add devel/autoconf/2.69 devel/automake/1.15 libtool gmake pkgconf libusb1-- libiconv python3 py3-pip' || '' }}
+          ${{ matrix.platform.name == 'openbsd' && 'export PKG_PATH="https://ftp.openbsd.org/pub/OpenBSD/$(uname -r)/packages/$(arch -s)/"; cat /etc/installurl; sudo echo $PKG_PATH; sudo pkg_add devel/autoconf/2.69 devel/automake/1.15 libtool gmake pkgconf libusb1-- libiconv python3 py3-pip' || '' }}
           ${{ matrix.system-hidapi == '--with-system-hidapi' && './build_install_hidapi_autotools.sh' || '' }}
 
           python -m pip install --upgrade pip
