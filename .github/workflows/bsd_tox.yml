@@ -20,9 +20,9 @@ jobs:
           # > pkg_add: no pkg found for 'autoconf', sorry.
           # > pkg_add: no pkg found for 'devel/autoconf', sorry.
           #
-          - name: netbsd
-            version: '9.0'
-            host: ubuntu-latest
+          #- name: netbsd
+          #  version: '9.3'
+          #  host: ubuntu-latest
 
           # Issues:
           # > bash: line 11: python: command not found
