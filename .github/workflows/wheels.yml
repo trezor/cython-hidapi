@@ -29,12 +29,11 @@ jobs:
         uses: pypa/cibuildwheel@v2.16.2
         env:
           CIBW_BUILD: "cp3*-*"
-          CIBW_SKIP: "*-musllinux_*"
           CIBW_ARCHS_WINDOWS: "auto"
           CIBW_ARCHS_MACOS: "x86_64 arm64"
           CIBW_ARCHS_LINUX: "x86_64 i686 aarch64"
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
-          CIBW_BEFORE_ALL_LINUX: yum install -y libusb1-devel libudev-devel
+          CIBW_BEFORE_ALL_LINUX: yum install -y libusb1-devel libudev-devel || apk add --upgrade libusb-dev eudev-dev
           HIDAPI_WITH_LIBUSB: 1
 
       - name: Store artifacts
