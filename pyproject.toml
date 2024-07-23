@@ -1,3 +1,16 @@
+[tool.poetry]
+name = "hidapi"
+version = "0.14.0"
+description = "A Cython interface to the hidapi from https://github.com/libusb/hidapi"
+authors = ["Pavol Rusnak <pavol@rusnak.io>"]
+readme = "README.rst"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+cython = "^3.0.10"
+twine = "^5.1.1"
+setuptools = "^71.1.0"
+
 [build-system]
 requires = ["setuptools", "Cython"]
 build-backend = "setuptools.build_meta"
