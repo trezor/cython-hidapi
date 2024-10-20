@@ -332,12 +332,13 @@ cdef class device:
 
     def get_report_descriptor(self, int max_length=4096):
         """Return the report descriptor up to max_length bytes.
+        If max_length is bigger than the actual descriptor, the full descriptor will be returned.
 
         :param max_length: Maximum number of bytes to read, must be positive
         :type max_length: int
 
         :return:
-        :rtype: list[int]
+        :rtype: List[int]
         :raises ValueError: If connection is not opened.
         :raises IOError: If read error
         """
