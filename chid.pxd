@@ -37,6 +37,7 @@ cdef extern from "<hidapi.h>":
     int hid_read(hid_device* device, unsigned char* data, int max_length) nogil
     int hid_read_timeout(hid_device* device, unsigned char* data, int max_length, int milliseconds) nogil
     int hid_set_nonblocking(hid_device* device, int value)
+    int hid_get_report_descriptor(hid_device* device, unsigned char *data, int length) nogil
     int hid_send_feature_report(hid_device* device, unsigned char *data, int length) nogil
     int hid_get_feature_report(hid_device* device, unsigned char *data, int length) nogil
     int hid_get_input_report(hid_device* device, unsigned char *data, int length) nogil
