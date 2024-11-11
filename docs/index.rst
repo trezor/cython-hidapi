@@ -11,7 +11,7 @@ Welcome to HIDAPI's documentation!
    :caption: Contents:
 
    Home <self>
-   examples.md
+   examples.rst
    api.rst
 
 

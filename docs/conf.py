@@ -30,7 +30,6 @@ author = "SatoshiLabs"
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "recommonmark",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -38,7 +37,6 @@ templates_path = ["_templates"]
 
 source_suffix = {
     ".rst": "restructuredtext",
-    ".md": "markdown",
 }
 
 # List of patterns, relative to source directory, that match files and
