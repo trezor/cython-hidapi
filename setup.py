@@ -79,15 +79,6 @@ def hidapi_src(platform):
     return os.path.join(embedded_hidapi_topdir, platform, "hid.c")
 
 
-def check_deprecated_without_libusb():
-    # already the default behavior, but accept the old option
-    if "--without-libusb" in sys.argv:
-        sys.argv.remove("--without-libusb")
-        print(
-            "Without libusb is already a default, '--without-libusb' option is redundant and deprecated"
-        )
-
-
 def hid_from_embedded_hidapi():
     # TODO: what about MinGW/msys?
     if sys.platform.startswith("win") or sys.platform.startswith("cygwin"):
@@ -130,11 +121,20 @@ def hid_from_embedded_hidapi():
 
     elif sys.platform.startswith("linux"):
         modules = []
+        if "--with-hidraw" in sys.argv:
+            sys.argv.remove("--with-hidraw")
+            HIDAPI_WITH_HIDRAW = True
+        else:
+            HIDAPI_WITH_HIDRAW = to_bool(os.getenv("HIDAPI_WITH_HIDRAW"))
         if "--with-libusb" in sys.argv:
             sys.argv.remove("--with-libusb")
             HIDAPI_WITH_LIBUSB = True
         else:
             HIDAPI_WITH_LIBUSB = to_bool(os.getenv("HIDAPI_WITH_LIBUSB"))
+
+        # make libusb backend default if none is specified
+        if not HIDAPI_WITH_HIDRAW and not HIDAPI_WITH_LIBUSB:
+            HIDAPI_WITH_LIBUSB = True
 
         if HIDAPI_WITH_LIBUSB:
             hidraw_module = "hidraw"
@@ -148,9 +148,10 @@ def hid_from_embedded_hidapi():
                     libusb_pkgconfig,
                 )
             )
-        else:
+        elif HIDAPI_WITH_HIDRAW:
             hidraw_module = "hid"
-            check_deprecated_without_libusb()
+        else:
+            raise ValueError("Unknown HIDAPI backend")
 
         modules.append(
             Extension(
@@ -179,11 +180,20 @@ def hid_from_embedded_hidapi():
 def hid_from_system_hidapi():
     if sys.platform.startswith("linux"):
         modules = []
+        if "--with-hidraw" in sys.argv:
+            sys.argv.remove("--with-hidraw")
+            HIDAPI_WITH_HIDRAW = True
+        else:
+            HIDAPI_WITH_HIDRAW = to_bool(os.getenv("HIDAPI_WITH_HIDRAW"))
         if "--with-libusb" in sys.argv:
             sys.argv.remove("--with-libusb")
             HIDAPI_WITH_LIBUSB = True
         else:
             HIDAPI_WITH_LIBUSB = to_bool(os.getenv("HIDAPI_WITH_LIBUSB"))
+
+        # make libusb backend default if none is specified
+        if not HIDAPI_WITH_HIDRAW and not HIDAPI_WITH_LIBUSB:
+            HIDAPI_WITH_LIBUSB = True
 
         if HIDAPI_WITH_LIBUSB:
             hidraw_module = "hidraw"
@@ -192,9 +202,10 @@ def hid_from_system_hidapi():
                     Extension("hid", sources=["hid.pyx"]), hidapi_libusb_pkgconfig
                 )
             )
-        else:
+        elif HIDAPI_WITH_HIDRAW:
             hidraw_module = "hid"
-            check_deprecated_without_libusb()
+        else:
+            raise ValueError("Unknown HIDAPI backend")
 
         modules.append(
             pkgconfig_configure_extension(
