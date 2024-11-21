@@ -330,12 +330,8 @@ cdef class device:
             result = hid_send_feature_report(c_hid, cbuff, c_buff_len)
         return result
 
-    def get_report_descriptor(self, int max_length=4096):
-        """Return the report descriptor up to max_length bytes.
-        If max_length is bigger than the actual descriptor, the full descriptor will be returned.
-
-        :param max_length: Maximum number of bytes to read, must be positive
-        :type max_length: int
+    def get_report_descriptor(self):
+        """Return the HID Report Descriptor for this device.
 
         :return:
         :rtype: List[int]
@@ -345,22 +341,14 @@ cdef class device:
         if self._c_hid == NULL:
             raise ValueError('not open')
 
-        cdef unsigned char* cbuff
-        cdef size_t c_descriptor_length = max(1, max_length)
+        cdef unsigned char cbuff[HID_API_MAX_REPORT_DESCRIPTOR_SIZE]
         cdef hid_device * c_hid = self._c_hid
         cdef int n
-        result = []
-        try:
-            cbuff = <unsigned char *>malloc(max_length)
-            with nogil:
-                n = hid_get_report_descriptor(c_hid, cbuff, c_descriptor_length)
-            if n < 0:
-                raise IOError('read error')
-            for i in range(n):
-                result.append(cbuff[i])
-        finally:
-            free(cbuff)
-        return result
+        with nogil:
+            n = hid_get_report_descriptor(c_hid, cbuff, sizeof(cbuff))
+        if n < 0:
+            raise IOError('read error')
+        return list(cbuff[:n])
 
     def get_feature_report(self, int report_num, int max_length):
         """Receive feature report.
