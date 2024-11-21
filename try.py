@@ -21,6 +21,7 @@ try:
     print("Manufacturer: %s" % h.get_manufacturer_string())
     print("Product: %s" % h.get_product_string())
     print("Serial No: %s" % h.get_serial_number_string())
+    print("Report descriptor: %s" % h.get_report_descriptor())
 
     # enable non-blocking mode
     h.set_nonblocking(1)
