@@ -1,6 +1,8 @@
 from libc.stddef cimport wchar_t, size_t
 
 cdef extern from "<hidapi.h>":
+    const int HID_API_MAX_REPORT_DESCRIPTOR_SIZE
+
     ctypedef struct hid_device:
         pass
 
