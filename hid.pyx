@@ -233,9 +233,7 @@ cdef class device:
                     n = hid_read(c_hid, cbuff, c_max_length)
             if n is -1:
                 raise IOError('read error')
-            res = []
-            for i in range(n):
-                res.append(cbuff[i])
+            res = list(cbuff[:n])
         finally:
             if max_length > 16:
                 free(cbuff)
@@ -377,11 +375,9 @@ cdef class device:
             cbuff[0] = report_num
             with nogil:
                 n = hid_get_feature_report(c_hid, cbuff, c_max_length)
-            res = []
             if n < 0:
                 raise IOError('read error')
-            for i in range(n):
-                res.append(cbuff[i])
+            res = list(cbuff[:n])
         finally:
             if max_length > 16:
                 free(cbuff)
@@ -414,11 +410,9 @@ cdef class device:
             cbuff[0] = report_num
             with nogil:
                 n = hid_get_input_report(c_hid, cbuff, c_max_length)
-            res = []
             if n < 0:
                 raise IOError('read error')
-            for i in range(n):
-                res.append(cbuff[i])
+            res = list(cbuff[:n])
         finally:
             if max_length > 16:
                 free(cbuff)
