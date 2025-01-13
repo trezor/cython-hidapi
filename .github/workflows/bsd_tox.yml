@@ -1,0 +1,67 @@
+name: VM Python package
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  bsd:
+    runs-on: ${{ matrix.platform.host }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: 
+          - name: freebsd
+            version: '13.2'
+            host: macos-latest
+
+          # Issues:
+          # > pkg_add: no pkg found for 'autoconf', sorry.
+          # > pkg_add: no pkg found for 'devel/autoconf', sorry.
+          #
+          #- name: netbsd
+          #  version: '9.3'
+          #  host: ubuntu-latest
+
+          # Issues:
+          # > bash: line 11: python: command not found
+          # > configure: error: HIDAPI is not supported on your operating system yet
+          #- name: openbsd
+          #  version: '7.4'
+          #  host: macos-latest
+
+        system-hidapi: ["", "--with-system-hidapi"]
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Run in VM
+      uses: cross-platform-actions/action@v0.21.1
+      env:
+        HIDAPI_SYSTEM_HIDAPI: ${{ matrix.system-hidapi == '--with-system-hidapi' && '1' || '0' }}
+      with:
+        environment_variables: HIDAPI_SYSTEM_HIDAPI
+        operating_system: ${{ matrix.platform.name }}
+        version: ${{ matrix.platform.version }}
+        shell: bash
+        sync_files: runner-to-vm
+        run: |
+          set -e
+
+          pwd && ls -l1
+
+          export PLATFORM_VERSION=${{ matrix.platform.version }}
+          ${{ matrix.platform.name == 'freebsd' && 'sudo pkg install -y autoconf automake libtool gmake libiconv pkgconf lang/python3 lang/python devel/py-pip' || '' }}
+          ${{ matrix.platform.name == 'netbsd' && 'export PATH=$PATH:/usr/sbin/; sudo pkg_add devel/autoconf devel/automake devel/libtool devel/gmake devel/pkgconf devel/libusb1 converters/libiconv devel/py-pip' || '' }}
+          ${{ matrix.platform.name == 'openbsd' && 'export AUTOCONF_VERSION=2.71; export AUTOMAKE_VERSION=1.15; sudo pkg_add autoconf-2.71 automake-1.15.1 libtool gmake pkgconf libusb1-- libiconv python3 py3-pip' || '' }}
+          ${{ matrix.system-hidapi == '--with-system-hidapi' && './build_install_hidapi_autotools.sh' || '' }}
+
+          python -m pip install --upgrade pip
+          python -m pip install setuptools tox tox-gh-actions
+          pip install -r requirements.txt --upgrade
+
+          pip install .
+          python -m tox
