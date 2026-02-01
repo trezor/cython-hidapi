@@ -1,12 +1,37 @@
 import sys
 import weakref
 
-from chid cimport *
+cimport chid
+from chid cimport (
+    hid_device, hid_device_info,
+    hid_enumerate, hid_free_enumeration,
+    hid_open, hid_open_path, hid_close,
+    hid_init, hid_exit,
+    hid_write, hid_read, hid_read_timeout,
+    hid_set_nonblocking,
+    hid_get_report_descriptor,
+    hid_send_feature_report, hid_get_feature_report, hid_get_input_report,
+    hid_get_manufacturer_string, hid_get_product_string,
+    hid_get_serial_number_string, hid_get_indexed_string,
+    hid_error, hid_version_str
+)
 from libc.stddef cimport wchar_t, size_t
 
 
 __version__ = "0.15.0"
 
+# Constants from hidapi
+HID_API_MAX_REPORT_DESCRIPTOR_SIZE = chid.HID_API_MAX_REPORT_DESCRIPTOR_SIZE
+HID_API_VERSION_MAJOR = chid.HID_API_VERSION_MAJOR
+HID_API_VERSION_MINOR = chid.HID_API_VERSION_MINOR
+HID_API_VERSION_PATCH = chid.HID_API_VERSION_PATCH
+
+# Bus type constants
+HID_API_BUS_UNKNOWN = chid.HID_API_BUS_UNKNOWN
+HID_API_BUS_USB = chid.HID_API_BUS_USB
+HID_API_BUS_BLUETOOTH = chid.HID_API_BUS_BLUETOOTH
+HID_API_BUS_I2C = chid.HID_API_BUS_I2C
+HID_API_BUS_SPI = chid.HID_API_BUS_SPI
 
 hid_init()
 
@@ -339,7 +364,7 @@ cdef class device:
         if self._c_hid == NULL:
             raise ValueError('not open')
 
-        cdef unsigned char cbuff[HID_API_MAX_REPORT_DESCRIPTOR_SIZE]
+        cdef unsigned char cbuff[chid.HID_API_MAX_REPORT_DESCRIPTOR_SIZE]
         cdef hid_device * c_hid = self._c_hid
         cdef int n
         with nogil:

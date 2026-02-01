@@ -2,16 +2,19 @@ from libc.stddef cimport wchar_t, size_t
 
 cdef extern from "<hidapi.h>":
     const int HID_API_MAX_REPORT_DESCRIPTOR_SIZE
+    const int HID_API_VERSION_MAJOR
+    const int HID_API_VERSION_MINOR
+    const int HID_API_VERSION_PATCH
 
     ctypedef struct hid_device:
         pass
 
     ctypedef enum hid_bus_type:
-        HID_API_BUS_UNKNOWN = 0x00,
-        HID_API_BUS_USB = 0x01,
-        HID_API_BUS_BLUETOOTH = 0x02,
-        HID_API_BUS_I2C = 0x03,
-        HID_API_BUS_SPI = 0x04
+        HID_API_BUS_UNKNOWN,
+        HID_API_BUS_USB,
+        HID_API_BUS_BLUETOOTH,
+        HID_API_BUS_I2C,
+        HID_API_BUS_SPI
 
     cdef struct hid_device_info:
         char *path
