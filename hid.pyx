@@ -240,6 +240,8 @@ cdef class device:
         """
         if self._c_hid == NULL:
             raise ValueError('not open')
+        if max_length < 0:
+            raise ValueError("max_length must not be negative")
         cdef unsigned char lbuff[16]
         cdef unsigned char* cbuff
         cdef size_t c_max_length = max_length
@@ -250,6 +252,8 @@ cdef class device:
                 cbuff = lbuff
             else:
                 cbuff = <unsigned char *>malloc(max_length)
+                if cbuff == NULL:
+                    raise MemoryError("Failed to allocate read buffer")
             if timeout_ms > 0:
                 with nogil:
                     n = hid_read_timeout(c_hid, cbuff, c_max_length, c_timeout_ms)
@@ -387,6 +391,8 @@ cdef class device:
         """
         if self._c_hid == NULL:
             raise ValueError('not open')
+        if max_length < 0:
+            raise ValueError("max_length must not be negative")
         cdef hid_device * c_hid = self._c_hid
         cdef unsigned char lbuff[16]
         cdef unsigned char* cbuff
@@ -397,6 +403,8 @@ cdef class device:
                 cbuff = lbuff
             else:
                 cbuff = <unsigned char *>malloc(max_length)
+                if cbuff == NULL:
+                    raise MemoryError("Failed to allocate read buffer")
             cbuff[0] = report_num
             with nogil:
                 n = hid_get_feature_report(c_hid, cbuff, c_max_length)
@@ -422,6 +430,8 @@ cdef class device:
         """
         if self._c_hid == NULL:
             raise ValueError('not open')
+        if max_length < 0:
+            raise ValueError("max_length must not be negative")
         cdef hid_device * c_hid = self._c_hid
         cdef unsigned char lbuff[16]
         cdef unsigned char* cbuff
@@ -432,6 +442,8 @@ cdef class device:
                 cbuff = lbuff
             else:
                 cbuff = <unsigned char *>malloc(max_length)
+                if cbuff == NULL:
+                    raise MemoryError("Failed to allocate read buffer")
             cbuff[0] = report_num
             with nogil:
                 n = hid_get_input_report(c_hid, cbuff, c_max_length)
