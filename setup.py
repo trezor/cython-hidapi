@@ -3,6 +3,7 @@ from Cython.Build import cythonize
 from setuptools import setup, Extension, Distribution
 from subprocess import call, PIPE, Popen
 import os
+import platform
 import re
 import shlex
 import subprocess
@@ -18,6 +19,9 @@ hidapi_pkgconfig = "hidapi >= " + min_required_hidapi_version
 tld = os.path.abspath(os.path.dirname(__file__))
 embedded_hidapi_topdir = os.path.join(tld, "hidapi")
 embedded_hidapi_include = os.path.join(embedded_hidapi_topdir, "hidapi")
+embedded_hidapi_macos_include = os.path.join(embedded_hidapi_topdir, "mac")
+
+ENV = {"PLATFORM": platform.system()}
 
 
 def to_bool(bool_str):
@@ -100,7 +104,7 @@ def hid_from_embedded_hidapi():
             Extension(
                 "hid",
                 sources=["hid.pyx", hidapi_src("mac")],
-                include_dirs=[embedded_hidapi_include],
+                include_dirs=[embedded_hidapi_include, embedded_hidapi_macos_include],
                 # TODO: remove -Wno-unreachable-code when the time comes: https://github.com/cython/cython/issues/3172
                 extra_compile_args=[
                     "-isysroot",
@@ -268,6 +272,6 @@ setup(
         "Programming Language :: Python :: 3.13",
         "Programming Language :: Python :: 3.14",
     ],
-    ext_modules=cythonize(modules, language_level=3),
+    ext_modules=cythonize(modules, language_level=3, compile_time_env=ENV),
     setup_requires=["setuptools>=19.0"],
 )

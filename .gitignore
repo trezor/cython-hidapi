@@ -15,9 +15,15 @@ hid.*.pyd
 
 # IDE files
 .idea/
+.vscode/
 
 # Virtual environments
 venv/
+Pipfile
 
 # Doc output
 docs/_build
+
+# macOS junk files
+.DS_Store
+._*
