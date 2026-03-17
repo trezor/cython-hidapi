@@ -128,6 +128,15 @@ cdef class device:
     """Device class.
 
     A device instance can be used to read from and write to a HID device.
+
+    Use it like:
+
+    .. code-block:: text
+
+        with hid.device().open(0x534C, 0x0001) as h:
+            h.write(...)
+
+    The context manager will take care of closing the device.
     """
 
     cdef hid_device *_c_hid
@@ -143,6 +152,8 @@ cdef class device:
         :type product_id: int, optional
         :param serial_number:
         :type serial_number: unicode, optional
+        :return: The instance itself.
+        :rtype: device
         :raises IOError:
         """
         cdef wchar_t * cserial_number = NULL
@@ -167,12 +178,15 @@ cdef class device:
         if self._c_hid == NULL:
             raise IOError('open failed')
         self._close = weakref.finalize(self, _closer.wrap(self._c_hid).close)
+        return self
 
     def open_path(self, bytes path):
         """Open connection by path.
 
         :param path: Path to device
         :type path: bytes
+        :return: The instance itself.
+        :rtype: device
         :raises IOError:
         """
         cdef char* cbuff = path
@@ -182,6 +196,7 @@ cdef class device:
         if self._c_hid == NULL:
             raise IOError('open failed')
         self._close = weakref.finalize(self, _closer.wrap(self._c_hid).close)
+        return self
 
     def close(self):
         """Close connection.
@@ -192,6 +207,18 @@ cdef class device:
             self._close()
             self._close.detach()
             self._c_hid = NULL
+
+    def __enter__(self):
+        """Context manager hook
+
+        :return: The instance itself.
+        :rtype: device
+        """
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager hook; closes the device."""
+        self.close()
 
     def write(self, buff):
         """Accept a list of integers (0-255) and send them to the device.
