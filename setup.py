@@ -144,6 +144,7 @@ def hid_from_embedded_hidapi():
                         "hid",
                         sources=["hid.pyx", hidapi_src("libusb")],
                         include_dirs=[embedded_hidapi_include],
+                        extra_compile_args=["-std=c99"],
                     ),
                     libusb_pkgconfig,
                 )
