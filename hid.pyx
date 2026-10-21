@@ -228,6 +228,19 @@ cdef class device:
             raise ValueError('not open')
         return hid_set_nonblocking(self._c_hid, v)
 
+    def get_queue_stats(self):
+        """Return native libusb receive queue statistics for this HID device."""
+        cdef unsigned long long received = 0
+        cdef unsigned long long dropped = 0
+        cdef unsigned int max_queue = 0
+        cdef int result
+        if self._c_hid == NULL:
+            raise ValueError("device not open")
+        result = chid.hid_get_queue_stats(self._c_hid, &received, &dropped, &max_queue)
+        if result != 0:
+            raise IOError("Queue statistics unavailable for this HIDAPI library or backend")
+        return {"received": received, "dropped": dropped, "max_queue": max_queue}
+
     def read(self, int max_length, int timeout_ms=0):
         """Return a list of integers (0-255) from the device up to max_length bytes.
 

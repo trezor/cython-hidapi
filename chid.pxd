@@ -36,6 +36,7 @@ cdef extern from "<hidapi.h>":
     hid_device* hid_open(unsigned short, unsigned short, const wchar_t*)
     hid_device* hid_open_path(char *path)
     void hid_close(hid_device *)
+
     int hid_init()
     int hid_exit()
     int hid_write(hid_device* device, unsigned char *data, int length) nogil
@@ -53,3 +54,22 @@ cdef extern from "<hidapi.h>":
     int hid_get_indexed_string(hid_device*, int, wchar_t *, size_t)
     wchar_t *hid_error(hid_device *)
     char* hid_version_str()
+
+# Older system HIDAPI releases do not export the optional queue API.
+cdef extern from *:
+    """
+    #include <hidapi.h>
+    static int cython_hid_get_queue_stats(hid_device *dev,
+        unsigned long long *received, unsigned long long *dropped,
+        unsigned int *max_queue)
+    {
+    #ifdef HID_API_HAS_QUEUE_STATS
+        return hid_get_queue_stats(dev, received, dropped, max_queue);
+    #else
+        (void)dev; (void)received; (void)dropped; (void)max_queue;
+        return -1;
+    #endif
+    }
+    """
+    int hid_get_queue_stats "cython_hid_get_queue_stats"(
+        hid_device*, unsigned long long*, unsigned long long*, unsigned int*)

@@ -1,3 +1,3 @@
 [submodule "hidapi"]
 	path = hidapi
-	url = https://github.com/libusb/hidapi.git
+	url = https://github.com/stman/hidapi.git
