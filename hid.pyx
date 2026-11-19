@@ -18,7 +18,7 @@ from chid cimport (
 from libc.stddef cimport wchar_t, size_t
 
 
-__version__ = "0.15.0.post1"
+__version__ = "0.16.0"
 
 # Constants from hidapi
 HID_API_MAX_REPORT_DESCRIPTOR_SIZE = chid.HID_API_MAX_REPORT_DESCRIPTOR_SIZE

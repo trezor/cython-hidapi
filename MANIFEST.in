@@ -5,6 +5,7 @@ include hidapi/linux/*.c
 include hidapi/linux/*.h
 include hidapi/mac/*.c
 include hidapi/mac/*.h
+include hidapi/src/core/*.h
 include hidapi/windows/*.c
 include hidapi/windows/*.h
 include LICENSE*.txt
